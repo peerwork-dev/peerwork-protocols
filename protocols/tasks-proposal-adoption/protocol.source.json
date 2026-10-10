@@ -1,0 +1,128 @@
+{
+  "format": "peerwork.protocol-source.v2",
+  "semantics": "peerwork.kernel.v1",
+  "manifest": {
+    "name": "peerwork.tasks-proposal-adoption.v1",
+    "display_version": "1",
+    "semantics": "peerwork.kernel.v1",
+    "dependencies": [],
+    "protocol_roles": [],
+    "capabilities": [],
+    "role_conflicts": [],
+    "historical_role_conflicts": [],
+    "constraints": {},
+    "record_schemas": {},
+    "initial_state": {},
+    "actions": []
+  },
+  "imports": [
+    {
+      "alias": "proposal",
+      "package_digest": "1b429fed32eccbbf761dc838e0ca529a407c1f202affffa887b9025a45398a4b",
+      "namespace": "proposal"
+    },
+    {
+      "alias": "tasks",
+      "package_digest": "b64f1ca03cf2c3bf37707543627b8fa30b5b04611da641129753326e8b51c2e8",
+      "namespace": "tasks"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "adoptionRole",
+      "type": "enum",
+      "values": [
+        "ADOPTER",
+        "REVIEWER"
+      ],
+      "default": "ADOPTER"
+    }
+  ],
+  "exports": [
+    {
+      "slot": "adoptionRole",
+      "parameter": "adoptionRole"
+    }
+  ],
+  "bindings": [
+    {
+      "parameter": "adoptionRole",
+      "import_alias": "proposal",
+      "slot": "adoptionRole"
+    }
+  ],
+  "derive": [],
+  "interfaces": {
+    "outputs": [
+      {
+        "name": "adopted_candidate",
+        "type": "exact_ref",
+        "schema": "proposal.proposal.candidate",
+        "scope": "INSTANCE",
+        "selector": {
+          "from": "import",
+          "alias": "proposal",
+          "output": "adopted_candidate"
+        },
+        "available_when": {
+          "op": "and",
+          "rules": [
+            {
+              "op": "not",
+              "rule": {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "proposal",
+                    "adopted_ref"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": null
+                }
+              }
+            },
+            {
+              "op": "eq",
+              "left": {
+                "from": "ref",
+                "source": "state",
+                "path": [
+                  "proposal",
+                  "adopted_ref"
+                ],
+                "scope": "INSTANCE"
+              },
+              "right": {
+                "from": "ref",
+                "source": "state",
+                "path": [
+                  "proposal",
+                  "candidate_ref"
+                ],
+                "scope": "INSTANCE"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "inputs": []
+  },
+  "connections": [
+    {
+      "from": {
+        "import": "proposal",
+        "output": "adopted_candidate"
+      },
+      "to": {
+        "import": "tasks",
+        "action": "task.create_from_proposal",
+        "variant": 0,
+        "input": "adopted_proposal"
+      }
+    }
+  ]
+}

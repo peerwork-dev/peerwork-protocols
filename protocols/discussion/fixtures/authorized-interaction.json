@@ -1,0 +1,22 @@
+{
+  "id": "authorized-interaction",
+  "action_id": "discussion.post",
+  "state": {},
+  "body": {
+    "message": "A first contribution."
+  },
+  "auth": {
+    "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "workspaceRoles": [],
+    "protocolRoles": [
+      "CONTRIBUTOR"
+    ],
+    "capabilities": [
+      "POST"
+    ]
+  },
+  "exact_inputs": [],
+  "expected": {
+    "accepted": true
+  }
+}

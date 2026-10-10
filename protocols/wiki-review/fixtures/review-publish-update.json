@@ -1,0 +1,255 @@
+{
+  "kind": "sequence",
+  "id": "review-publish-and-update",
+  "state": {},
+  "steps": [
+    {
+      "action_id": "wiki.create",
+      "body": {
+        "title": "Review me",
+        "body": "Draft body"
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "AUTHOR"
+        ],
+        "capabilities": [
+          "DRAFT"
+        ]
+      },
+      "bind_refs": [
+        {
+          "name": "draft1",
+          "record_slot": "revision"
+        }
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "review.submit",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft1"
+        }
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "AUTHOR"
+        ],
+        "capabilities": [
+          "SUBMIT"
+        ]
+      },
+      "exact_inputs": [
+        "draft1"
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "review.approve",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft1"
+        }
+      },
+      "auth": {
+        "actorId": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "REVIEWER"
+        ],
+        "capabilities": [
+          "REVIEW"
+        ]
+      },
+      "exact_inputs": [
+        "draft1"
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "wiki.publish",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft1"
+        }
+      },
+      "auth": {
+        "actorId": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "PUBLISHER"
+        ],
+        "capabilities": [
+          "PUBLISH"
+        ]
+      },
+      "exact_inputs": [
+        "draft1"
+      ],
+      "bind_refs": [
+        {
+          "name": "publication1",
+          "record_slot": "publication"
+        }
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "wiki.revise",
+      "body": {
+        "title": "Updated",
+        "body": "Updated draft body",
+        "parent_ref": {
+          "$fixture_ref": "draft1"
+        }
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "AUTHOR"
+        ],
+        "capabilities": [
+          "DRAFT"
+        ]
+      },
+      "exact_inputs": [
+        "draft1"
+      ],
+      "bind_refs": [
+        {
+          "name": "draft2",
+          "record_slot": "revision"
+        }
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "review.submit",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft2"
+        }
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "AUTHOR"
+        ],
+        "capabilities": [
+          "SUBMIT"
+        ]
+      },
+      "exact_inputs": [
+        "draft2"
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "review.approve",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft2"
+        }
+      },
+      "auth": {
+        "actorId": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "REVIEWER"
+        ],
+        "capabilities": [
+          "REVIEW"
+        ]
+      },
+      "exact_inputs": [
+        "draft2"
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "wiki.publish_update",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft2"
+        },
+        "expected_publication_ref": {
+          "$fixture_ref": "publication1"
+        }
+      },
+      "auth": {
+        "actorId": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "PUBLISHER"
+        ],
+        "capabilities": [
+          "PUBLISH"
+        ]
+      },
+      "exact_inputs": [
+        "draft2",
+        "publication1"
+      ],
+      "bind_refs": [
+        {
+          "name": "publication2",
+          "record_slot": "publication"
+        }
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "wiki.publish_update",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft2"
+        },
+        "expected_publication_ref": {
+          "$fixture_ref": "publication1"
+        }
+      },
+      "auth": {
+        "actorId": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "PUBLISHER"
+        ],
+        "capabilities": [
+          "PUBLISH"
+        ]
+      },
+      "exact_inputs": [
+        "draft2",
+        "publication1",
+        "publication2"
+      ],
+      "expected": {
+        "accepted": false,
+        "code": "CONSTRAINT_FAILED"
+      }
+    }
+  ]
+}

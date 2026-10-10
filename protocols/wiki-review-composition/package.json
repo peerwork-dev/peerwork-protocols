@@ -1,0 +1,15 @@
+{
+  "format": "peerwork.protocol-package-metadata.v1",
+  "package_id": "peerwork-wiki-review-composition",
+  "version": "2.0.0",
+  "name": "Peerwork Wiki Review Composition",
+  "description": "Separate Wiki draft and review/publication packages connected only by typed exact-reference and actor-id ports.",
+  "license": "Apache-2.0",
+  "license_file": "LICENSE",
+  "source_maintainers": [
+    {
+      "name": "Peerwork project maintainers",
+      "origin": "the project-maintained Wiki draft and review components"
+    }
+  ]
+}

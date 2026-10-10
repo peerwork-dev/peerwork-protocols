@@ -1,0 +1,15 @@
+{
+  "format": "peerwork.protocol-package-metadata.v1",
+  "package_id": "peerwork-proposal-adoption-component",
+  "version": "2.0.0",
+  "name": "Peerwork Proposal Adoption Component",
+  "description": "Reusable proposal authoring and exact-reference independent adoption interface.",
+  "license": "Apache-2.0",
+  "license_file": "LICENSE",
+  "source_maintainers": [
+    {
+      "name": "Peerwork project maintainers",
+      "origin": "protocols/proposal-adoption and scripts/generate-official-protocols.mjs"
+    }
+  ]
+}

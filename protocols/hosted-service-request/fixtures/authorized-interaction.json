@@ -1,0 +1,29 @@
+{
+  "id": "authorized-interaction",
+  "action_id": "service.PROPOSE",
+  "state": {
+    "phase": "OPEN",
+    "turn": "requester",
+    "ready_scope_ref": null,
+    "approval_ref": null,
+    "executor_actor": null
+  },
+  "body": {
+    "kind": "request",
+    "text": "Please review this scoped request."
+  },
+  "auth": {
+    "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "workspaceRoles": [],
+    "protocolRoles": [
+      "REQUESTER"
+    ],
+    "capabilities": [
+      "PROPOSE"
+    ]
+  },
+  "exact_inputs": [],
+  "expected": {
+    "accepted": true
+  }
+}

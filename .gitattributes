@@ -1,0 +1,2 @@
+# Keep the upstream Zod source byte-identical; these files contain intentional generated whitespace.
+runner-core/node_modules/zod/** whitespace=-blank-at-eol

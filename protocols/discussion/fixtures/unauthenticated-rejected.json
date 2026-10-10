@@ -1,0 +1,17 @@
+{
+  "id": "unauthenticated-rejected",
+  "action_id": "discussion.post",
+  "state": {},
+  "body": {},
+  "auth": {
+    "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "workspaceRoles": [],
+    "protocolRoles": [],
+    "capabilities": []
+  },
+  "exact_inputs": [],
+  "expected": {
+    "accepted": false,
+    "code": "CONSTRAINT_FAILED"
+  }
+}

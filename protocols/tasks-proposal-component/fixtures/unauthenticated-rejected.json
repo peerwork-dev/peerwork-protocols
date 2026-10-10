@@ -1,0 +1,17 @@
+{
+  "id": "unauthenticated-rejected",
+  "action_id": "task.create",
+  "state": {},
+  "body": {},
+  "auth": {
+    "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "workspaceRoles": [],
+    "protocolRoles": [],
+    "capabilities": []
+  },
+  "exact_inputs": [],
+  "expected": {
+    "accepted": false,
+    "code": "CONSTRAINT_FAILED"
+  }
+}

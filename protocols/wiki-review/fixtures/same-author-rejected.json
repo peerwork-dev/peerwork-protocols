@@ -1,0 +1,102 @@
+{
+  "kind": "sequence",
+  "id": "same-author-review-denied-then-continue",
+  "state": {},
+  "steps": [
+    {
+      "action_id": "wiki.create",
+      "body": {
+        "title": "Self review",
+        "body": "Draft"
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "AUTHOR"
+        ],
+        "capabilities": [
+          "DRAFT"
+        ]
+      },
+      "bind_refs": [
+        {
+          "name": "draft",
+          "record_slot": "revision"
+        }
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "review.submit",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft"
+        }
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "AUTHOR"
+        ],
+        "capabilities": [
+          "SUBMIT"
+        ]
+      },
+      "exact_inputs": [
+        "draft"
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "review.approve",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft"
+        }
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "REVIEWER"
+        ],
+        "capabilities": [
+          "REVIEW"
+        ]
+      },
+      "exact_inputs": [
+        "draft"
+      ],
+      "expected": {
+        "accepted": false,
+        "code": "CONSTRAINT_FAILED"
+      }
+    },
+    {
+      "action_id": "wiki.create",
+      "body": {
+        "title": "After denial",
+        "body": "Runner continues"
+      },
+      "auth": {
+        "actorId": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "AUTHOR"
+        ],
+        "capabilities": [
+          "DRAFT"
+        ]
+      },
+      "expected": {
+        "accepted": true
+      }
+    }
+  ]
+}

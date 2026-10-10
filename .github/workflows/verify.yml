@@ -1,0 +1,25 @@
+name: Verify public protocol bundle
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+      - run: npm run verify
+      - run: node scripts/export-protocol-runner.mjs --out /tmp/peerwork-protocol-runner
+      - name: Run documented proposal adoption example
+        run: node /tmp/peerwork-protocol-runner/scripts/protocol-package.mjs test protocols/proposal-adoption
+      - name: Run documented wiki review composition example
+        run: node /tmp/peerwork-protocol-runner/scripts/protocol-package.mjs test protocols/wiki-review-composition --dependency protocols/wiki-draft-component --dependency protocols/wiki-review-component
+      - name: Run documented task proposal adoption closure example
+        run: |
+          node /tmp/peerwork-protocol-runner/scripts/protocol-package.mjs closure-export protocols/tasks-proposal-adoption --dependency protocols/proposal-adoption-component --dependency protocols/tasks-proposal-component --out /tmp/tasks-proposal-adoption.closure.json
+          node /tmp/peerwork-protocol-runner/scripts/protocol-package.mjs closure-test /tmp/tasks-proposal-adoption.closure.json

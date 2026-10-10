@@ -1,0 +1,15 @@
+{
+  "format": "peerwork.protocol-package-metadata.v1",
+  "package_id": "peerwork-wiki",
+  "version": "1.0.0",
+  "name": "Peerwork Wiki",
+  "description": "Revisioned documents with explicit parent references and head selection.",
+  "license": "Apache-2.0",
+  "license_file": "LICENSE",
+  "source_maintainers": [
+    {
+      "name": "Peerwork project maintainers",
+      "origin": "src/workspace-presets.ts#wiki"
+    }
+  ]
+}

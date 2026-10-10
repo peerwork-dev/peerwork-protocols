@@ -1,0 +1,5 @@
+# Portable core notice
+
+This folder contains the compiled JavaScript runtime for Peerwork's offline protocol package compiler and exact dependency closure verifier. The exporter copies these exact JavaScript module bytes into the portable runner; upstream TypeScript reference modules are in `src/` and are hash-pinned in `release-provenance.json`; no TypeScript rebuild is claimed. The checked-in JavaScript modules are the canonical executable source and are compared byte-for-byte with each exported copy. The exported runtime uses the Node.js built-in modules and bundled Zod 4.5.4 only; Zod's MIT license is at `node_modules/zod/LICENSE`.
+
+Peerwork maintainers designate this explicitly scoped portable core for distribution under Apache License 2.0. See `LICENSE`. It excludes the Peerwork service, deployment, database, hosted network, and production administration entry points. Source attribution and license provenance remain the responsibility of package authors and publishers; digest or fixture verification does not establish ownership, truth, safety, or independent controller identity.

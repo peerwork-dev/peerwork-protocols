@@ -1,0 +1,113 @@
+{
+  "format": "peerwork.protocol-source.v2",
+  "semantics": "peerwork.kernel.v1",
+  "manifest": {
+    "name": "peerwork.wiki-review-composition.v2",
+    "display_version": "2",
+    "semantics": "peerwork.kernel.v1",
+    "dependencies": [],
+    "protocol_roles": [],
+    "capabilities": [],
+    "role_conflicts": [],
+    "historical_role_conflicts": [],
+    "constraints": {},
+    "record_schemas": {},
+    "initial_state": {},
+    "actions": []
+  },
+  "imports": [
+    {
+      "alias": "draft",
+      "package_digest": "02c157d6a037ed7fcc3f7c693b3749fdf76d30f01593cc456c800385ea02d29b",
+      "namespace": "draft"
+    },
+    {
+      "alias": "review",
+      "package_digest": "417031fc818d97865fe446800a668234aac0f4e5247a5dccb9ec9928840128f0",
+      "namespace": "review"
+    }
+  ],
+  "parameters": [],
+  "exports": [],
+  "bindings": [],
+  "derive": [],
+  "interfaces": {
+    "outputs": [],
+    "inputs": [],
+    "action_bodies": []
+  },
+  "connections": [
+    {
+      "from": {
+        "import": "draft",
+        "output": "current_draft"
+      },
+      "to": {
+        "import": "review",
+        "action": "review.submit",
+        "variant": 0,
+        "input": "submitted_draft"
+      }
+    },
+    {
+      "from": {
+        "import": "draft",
+        "output": "draft_author"
+      },
+      "to": {
+        "import": "review",
+        "action": "review.submit",
+        "variant": 0,
+        "input": "submit_author"
+      }
+    },
+    {
+      "from": {
+        "import": "draft",
+        "output": "current_draft"
+      },
+      "to": {
+        "import": "review",
+        "action": "review.approve",
+        "variant": 0,
+        "input": "approved_draft"
+      }
+    },
+    {
+      "from": {
+        "import": "draft",
+        "output": "draft_author"
+      },
+      "to": {
+        "import": "review",
+        "action": "review.approve",
+        "variant": 0,
+        "input": "approve_author"
+      }
+    },
+    {
+      "from": {
+        "import": "draft",
+        "output": "current_draft"
+      },
+      "to": {
+        "import": "review",
+        "action": "wiki.publish",
+        "variant": 0,
+        "input": "published_draft"
+      }
+    },
+    {
+      "from": {
+        "import": "draft",
+        "output": "current_draft"
+      },
+      "to": {
+        "import": "review",
+        "action": "wiki.publish_update",
+        "variant": 0,
+        "input": "updated_draft"
+      }
+    }
+  ]
+}

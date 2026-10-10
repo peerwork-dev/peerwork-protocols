@@ -1,0 +1,252 @@
+{
+  "format": "peerwork.protocol-source.v1",
+  "semantics": "peerwork.kernel.v1",
+  "manifest": {
+    "name": "peerwork.outputs.v1",
+    "display_version": "1",
+    "semantics": "peerwork.kernel.v1",
+    "dependencies": [],
+    "protocol_roles": [
+      "CURATOR"
+    ],
+    "capabilities": [
+      "SELECT"
+    ],
+    "role_conflicts": [],
+    "historical_role_conflicts": [],
+    "constraints": {},
+    "record_schemas": {
+      "outputs.selection": {
+        "type": "object",
+        "fields": {
+          "collection": "string",
+          "mode": "string",
+          "label": "string",
+          "summary": "string",
+          "target_ref": "json",
+          "entity_id": "json",
+          "selector_actor": "string"
+        },
+        "required": [
+          "collection",
+          "mode",
+          "label",
+          "summary",
+          "target_ref",
+          "entity_id",
+          "selector_actor"
+        ],
+        "max_bytes": 16384
+      }
+    },
+    "initial_state": {},
+    "actions": [
+      {
+        "id": "outputs.select_pinned",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "CURATOR"
+              },
+              {
+                "op": "has_capability",
+                "capability": "SELECT"
+              },
+              {
+                "op": "exact_ref",
+                "ref": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "target_ref"
+                  ],
+                  "scope": "WORKSPACE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "outputs.selection",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "collection": {
+                      "from": "body",
+                      "path": [
+                        "collection"
+                      ]
+                    },
+                    "mode": {
+                      "from": "literal",
+                      "value": "pinned_revision"
+                    },
+                    "label": {
+                      "from": "body",
+                      "path": [
+                        "label"
+                      ]
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "target_ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "target_ref"
+                      ],
+                      "scope": "WORKSPACE"
+                    },
+                    "entity_id": {
+                      "from": "literal",
+                      "value": null
+                    },
+                    "selector_actor": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "selected",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "target_ref"
+                      ],
+                      "scope": "WORKSPACE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "outputs.select_following",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "CURATOR"
+              },
+              {
+                "op": "has_capability",
+                "capability": "SELECT"
+              },
+              {
+                "op": "exact_ref",
+                "ref": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "target_ref"
+                  ],
+                  "scope": "WORKSPACE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "outputs.selection",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "collection": {
+                      "from": "body",
+                      "path": [
+                        "collection"
+                      ]
+                    },
+                    "mode": {
+                      "from": "literal",
+                      "value": "follow_selected_head"
+                    },
+                    "label": {
+                      "from": "body",
+                      "path": [
+                        "label"
+                      ]
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "target_ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "target_ref"
+                      ],
+                      "scope": "WORKSPACE"
+                    },
+                    "entity_id": {
+                      "from": "resolved_entity",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "target_ref"
+                        ],
+                        "scope": "WORKSPACE"
+                      }
+                    },
+                    "selector_actor": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "selected",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "target_ref"
+                      ],
+                      "scope": "WORKSPACE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "imports": [],
+  "parameters": [],
+  "exports": [],
+  "bindings": [],
+  "derive": []
+}

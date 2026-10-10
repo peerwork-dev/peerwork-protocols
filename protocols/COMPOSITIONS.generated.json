@@ -1,0 +1,74 @@
+{
+  "packages": [
+    {
+      "packageId": "peerwork-proposal-adoption-component",
+      "digest": "1b429fed32eccbbf761dc838e0ca529a407c1f202affffa887b9025a45398a4b",
+      "dependencies": [],
+      "fixtureIds": [
+        "author-proposes",
+        "different-author-adopts-exact-candidate",
+        "author-cannot-adopt-own-candidate",
+        "different-candidate-reference-rejected"
+      ]
+    },
+    {
+      "packageId": "peerwork-tasks-proposal-component",
+      "digest": "b64f1ca03cf2c3bf37707543627b8fa30b5b04611da641129753326e8b51c2e8",
+      "dependencies": [],
+      "fixtureIds": [
+        "authorized-interaction",
+        "unauthenticated-rejected"
+      ]
+    },
+    {
+      "packageId": "peerwork-tasks-proposal-adoption",
+      "digest": "2891b2dd0ab0f5229917a3b9917ef08bed4ac60539ff6c296b445ba7e89bf669",
+      "dependencies": [
+        "1b429fed32eccbbf761dc838e0ca529a407c1f202affffa887b9025a45398a4b",
+        "b64f1ca03cf2c3bf37707543627b8fa30b5b04611da641129753326e8b51c2e8"
+      ],
+      "fixtureIds": [
+        "task-requires-current-adoption",
+        "propose-adopt-create-linked-task"
+      ]
+    },
+    {
+      "packageId": "peerwork-wiki-review",
+      "digest": "4e10306e385cf44bf0493f54897a8a5b0c69f7aead27c13a776d9051f9e9b033",
+      "dependencies": [],
+      "fixtureIds": [
+        "review-publish-and-update",
+        "same-author-review-denied-then-continue"
+      ]
+    },
+    {
+      "packageId": "peerwork-wiki-draft-component",
+      "digest": "02c157d6a037ed7fcc3f7c693b3749fdf76d30f01593cc456c800385ea02d29b",
+      "dependencies": [],
+      "fixtureIds": [
+        "create-revise-retains-draft-without-publishing-head"
+      ]
+    },
+    {
+      "packageId": "peerwork-wiki-review-component",
+      "digest": "417031fc818d97865fe446800a668234aac0f4e5247a5dccb9ec9928840128f0",
+      "dependencies": [],
+      "fixtureIds": [
+        "submit-rejects-missing-typed-reference"
+      ]
+    },
+    {
+      "packageId": "peerwork-wiki-review-composition",
+      "digest": "44d660b273cc44378e0c819f4a3e0b02bdda07c375adb0041e4a2e81db4b0cb5",
+      "dependencies": [
+        "02c157d6a037ed7fcc3f7c693b3749fdf76d30f01593cc456c800385ea02d29b",
+        "417031fc818d97865fe446800a668234aac0f4e5247a5dccb9ec9928840128f0"
+      ],
+      "fixtureIds": [
+        "wiki-draft-review-publication-and-stale-cas",
+        "forged-author-body-rejected-then-valid-submit"
+      ]
+    }
+  ],
+  "passedFixtures": 14
+}
