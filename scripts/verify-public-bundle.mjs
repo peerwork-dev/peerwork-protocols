@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {protocolDirectories} from './protocol-directories.mjs';
 import assert from 'node:assert/strict';
 import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -39,7 +40,7 @@ try {
   const { parseProtocolPackage } = await import(pathToFileURL(join(runner, 'dist-workspace/src/protocol-package.js')).href);
   const { compileProtocolPackage } = await import(pathToFileURL(join(runner, 'dist-workspace/src/protocol-compiler.js')).href);
   const closureApi = await import(pathToFileURL(join(runner, 'dist-workspace/src/protocol-package-closure.js')).href);
-  const dirs = (await readdir(join(root, 'protocols'), { withFileTypes: true })).filter(x => x.isDirectory()).map(x => x.name).sort();
+  const dirs = await protocolDirectories(root);
   const packages = [];
   for (const dir of dirs) {
     const base = join(root, 'protocols', dir), files = Object.create(null);

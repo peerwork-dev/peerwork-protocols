@@ -1,0 +1,9 @@
+{
+  "format": "peerwork.protocol-artifact-source.v1",
+  "product_source_commit": "f7ec98892ea25aed8d304c152ccba104ff72b64c",
+  "sdk_version": "0.2.5",
+  "execution_profile": "backend-structure-v1",
+  "build_command": "node scripts/build-protocol-role-bundles.mjs",
+  "source_location": "Peerwork Backend protocols/agent-cooperation; ordinary normalized manifests compiled by the actual Backend",
+  "research_code_copied": false
+}

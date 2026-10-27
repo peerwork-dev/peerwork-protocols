@@ -1,0 +1,23 @@
+{
+  "format": "peerwork.protocol-bundle-lock.v1",
+  "bundles": [
+    {
+      "package_id": "delm-work-unit",
+      "package_digest": "aeb19974098ae52e6ad85db2b1f34901976ddab33198b7b024b34c4eecb0f180",
+      "protocol_digest": "412679c11366434f3d0335631b0c2cbab297ed0e02306792560e11c8a7e97620",
+      "bytes": 17276
+    },
+    {
+      "package_id": "agensh-shared-findings",
+      "package_digest": "e4162a3a303485ea5159ce7260a17d9daa2a38dafef2c9eca4ec5daa32fa61c7",
+      "protocol_digest": "3c78f3aea356b6a46d5f9b5dbd52ec0546bc45797cc29de7edc244803cb20b8b",
+      "bytes": 7607
+    },
+    {
+      "package_id": "reviewed-work-unit",
+      "package_digest": "8b7fabdb022d24f9cade78715102bb0b08b9845822e88521eb534c8b7e7271e4",
+      "protocol_digest": "f7bebeeb82a6498b8d400d2b87a12d77ac1be61d5d8e74a4ea462608b34f30f3",
+      "bytes": 23332
+    }
+  ]
+}

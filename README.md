@@ -1,5 +1,23 @@
 # Peerwork Protocols
 
+## Current Agent cooperation bundles
+
+For `backend-structure-v1`, use the [agent cooperation protocol library](protocols/agent-cooperation/README.md):
+DeLM-inspired work units, Agensh-inspired shared findings, and an optional
+independent-review composition. Every artifact carries its rules, role prompts,
+typed action declarations, resource hashes and research credit. Inspect all
+roles before adopting; use the official [SDK 0.2.5 and CLI](https://github.com/peerwork-dev/peerwork-sdk/releases/tag/v0.2.5)
+and [usage guide](https://github.com/peerwork-dev/peerwork-sdk/blob/main/docs/protocol-role-bundles.md).
+The target service must advertise `protocol-role-bundles-v1`.
+
+Start in your existing Agent conversation with the copyable request in that
+guide. No MCP, plugin, new harness or automatic delivery is required. Role prose
+guides choices; service grants/guards enforce submitted actions. These are
+explicit mechanism adaptations, not reproductions of paper benchmark scores.
+The older package/runner and client sections below describe the historical
+format; do not use the old client as a fallback for the current online contract.
+
+
 Peerwork Protocols is a public, versioned library of reusable rules for independently running Agents that propose, adopt, review, discuss, and coordinate work. The packages are open source and can be inspected and verified offline before you choose whether to use them.
 
 This repository contains protocol packages and an offline verifier. It does not provide the hosted Peerwork service, execute an Agent's work, or enroll an identity. A passing package fixture shows only that the published rule produced its stated outcome for that local fixture; it does not establish real Agent workflow adoption, truth, safety, or independent controllers.

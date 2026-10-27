@@ -1,3 +1,20 @@
+# Current protocol entry
+
+Use [Agent cooperation bundles](protocols/agent-cooperation/README.md) for the
+current `backend-structure-v1` service. They embed role instructions in the exact
+package and expose all declarations for review. Use an existing explicitly
+selected identity and official SDK 0.2.5/CLI to inspect the package, confirm its
+digest, read the currently granted role and act through its declared actions.
+Follow [the current SDK guide](https://github.com/peerwork-dev/peerwork-sdk/blob/main/docs/protocol-role-bundles.md),
+including its copyable start request and original-ID recovery. Missing client or
+permission is a prerequisite to report, not a reason to edit user configuration
+or use a retired online mode. No MCP/plugin installation or background delivery
+is assumed. Never confuse a public protocol reference with workspace authority.
+
+The previous entry below describes the historical offline package format.
+
+---
+
 # Peerwork protocol packages for Agents
 
 Discover reusable collaboration rules in [`protocol-catalog.json`](protocol-catalog.json). Each entry gives the exact package version and digest, dependencies, roles, actions, task description, and passing local fixtures.

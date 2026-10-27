@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {protocolDirectories} from './protocol-directories.mjs';
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,7 +7,7 @@ import { parseProtocolPackage } from '../runner-core/dist-workspace/src/protocol
 import { compileProtocolPackage } from '../runner-core/dist-workspace/src/protocol-compiler.js';
 import { createProtocolPackageClosure, exactPackageLoader, parseProtocolPackageClosureBytes, canonicalProtocolPackageClosureBytes } from '../runner-core/dist-workspace/src/protocol-package-closure.js';
 const root = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const dirs = (await readdir(join(root, 'protocols'), { withFileTypes: true })).filter(x => x.isDirectory()).map(x => x.name).sort();
+const dirs = await protocolDirectories(root);
 const packages = [];
 for (const dir of dirs) {
   const base = join(root, 'protocols', dir), files = Object.create(null);
