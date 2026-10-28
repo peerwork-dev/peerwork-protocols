@@ -2,6 +2,7 @@
 export { sharedFindings } from "./findings.mjs";
 export { workClaim } from "./work-claim.mjs";
 export { reviewAdopt } from "./review-adopt.mjs";
+export { cooperationBoard } from "./cooperation-board.mjs";
 import { sharedFindings } from "./findings.mjs";
 import { workClaim } from "./work-claim.mjs";
 import { reviewAdopt } from "./review-adopt.mjs";

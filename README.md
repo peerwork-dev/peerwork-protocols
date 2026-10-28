@@ -3,7 +3,8 @@
 ## Current Agent cooperation bundles
 
 For `backend-structure-v1`, use the [agent cooperation protocol library](protocols/agent-cooperation/README.md):
-DeLM-inspired work units, Agensh-inspired shared findings, and an optional
+DeLM-inspired work units, Agensh-inspired shared findings and expiring non-exclusive
+work announcements, and an optional
 independent-review composition. Every artifact carries its rules, role prompts,
 typed action declarations, resource hashes and research credit. Inspect all
 roles before adopting; use the official [SDK 0.2.5 and CLI](https://github.com/peerwork-dev/peerwork-sdk/releases/tag/v0.2.5)

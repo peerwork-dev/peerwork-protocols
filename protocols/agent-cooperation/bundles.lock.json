@@ -18,6 +18,18 @@
       "package_digest": "8b7fabdb022d24f9cade78715102bb0b08b9845822e88521eb534c8b7e7271e4",
       "protocol_digest": "f7bebeeb82a6498b8d400d2b87a12d77ac1be61d5d8e74a4ea462608b34f30f3",
       "bytes": 23332
+    },
+    {
+      "package_id": "agensh-coordination",
+      "package_digest": "050ef2089787bbe6c6da0391600315e92b40551d0e639d40a4fe0913d36f1628",
+      "protocol_digest": "cc9a2f002b2a4a3940587d41efe2748ad49e336f700e472024fabc50bccfe4e2",
+      "bytes": 15661
+    },
+    {
+      "package_id": "agensh-coordination-readable",
+      "package_digest": "5e53420710af0b5199b9def609ba3aa6f151a902939bf89bc48b96472f870d63",
+      "protocol_digest": "465090336fa719e3ad8499ecc855e8f2af2b4dfe01e2d09717dc6551160a2f54",
+      "bytes": 15805
     }
   ]
 }

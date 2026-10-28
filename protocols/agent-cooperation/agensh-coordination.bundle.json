@@ -1,0 +1,1316 @@
+{
+  "format": "peerwork.protocol-bundle.v1",
+  "metadata": {
+    "package_id": "agensh-coordination",
+    "version": "1.0.0",
+    "description": "Opt-in agent cooperation protocol reference; see README for research adaptation boundaries.",
+    "license": "Apache-2.0",
+    "credits": [
+      {
+        "name": "Zhan, Song, Dong, Huang, Lian, Xia and Wei — Agensh",
+        "url": "https://arxiv.org/abs/2609.26781v1"
+      }
+    ]
+  },
+  "manifest": {
+    "name": "agensh-coordination",
+    "display_version": "1.0.0",
+    "semantics": "peerwork.kernel.v1",
+    "dependencies": [],
+    "protocol_roles": [
+      "WORKER"
+    ],
+    "capabilities": [
+      "FINDING"
+    ],
+    "role_conflicts": [],
+    "historical_role_conflicts": [],
+    "constraints": {},
+    "record_schemas": {
+      "finding": {
+        "type": "object",
+        "fields": {
+          "author": "string",
+          "kind": "string",
+          "subject": "string",
+          "summary": "string",
+          "detail_mode": "string",
+          "detail": "json",
+          "status": "string",
+          "previous": "json",
+          "created_at": "integer"
+        },
+        "required": [
+          "author",
+          "kind",
+          "subject",
+          "summary",
+          "detail_mode",
+          "detail",
+          "status",
+          "previous",
+          "created_at"
+        ],
+        "max_bytes": 4096
+      },
+      "finding.challenge": {
+        "type": "object",
+        "fields": {
+          "author": "string",
+          "target": "json",
+          "summary": "string",
+          "created_at": "integer"
+        },
+        "required": [
+          "author",
+          "target",
+          "summary",
+          "created_at"
+        ],
+        "max_bytes": 4096
+      },
+      "work.announcement": {
+        "type": "object",
+        "fields": {
+          "kind": "string",
+          "author": "string",
+          "scope": "string",
+          "summary": "string",
+          "expires_at": "integer",
+          "status": "string",
+          "previous": "json",
+          "created_at": "integer"
+        },
+        "required": [
+          "kind",
+          "author",
+          "scope",
+          "summary",
+          "expires_at",
+          "status",
+          "previous",
+          "created_at"
+        ],
+        "max_bytes": 4096
+      }
+    },
+    "initial_state": {},
+    "actions": [
+      {
+        "id": "finding.publish",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "finding"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding",
+                "entity": {
+                  "mode": "new",
+                  "slot": "finding"
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "kind": {
+                      "from": "body",
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "subject": {
+                      "from": "body",
+                      "path": [
+                        "subject"
+                      ]
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "detail_mode": {
+                      "from": "literal",
+                      "value": "E2EE_BODY"
+                    },
+                    "detail": {
+                      "from": "literal",
+                      "value": null
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "ACTIVE"
+                    },
+                    "previous": {
+                      "from": "literal",
+                      "value": null
+                    },
+                    "created_at": {
+                      "from": "time"
+                    }
+                  }
+                },
+                "relations": []
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "kind": {
+              "type": "enum",
+              "values": [
+                "OBSERVED",
+                "FACT",
+                "FAIL",
+                "PATCH_SUMMARY"
+              ]
+            },
+            "subject": {
+              "type": "string",
+              "maxBytes": 120
+            },
+            "summary": {
+              "type": "string",
+              "maxBytes": 512
+            }
+          },
+          "required": [
+            "kind",
+            "subject",
+            "summary"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "finding.correct",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "finding"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "author"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "ACTIVE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "finding",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "kind": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "subject": {
+                      "from": "body",
+                      "path": [
+                        "subject"
+                      ]
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "detail_mode": {
+                      "from": "literal",
+                      "value": "E2EE_BODY"
+                    },
+                    "detail": {
+                      "from": "literal",
+                      "value": null
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "ACTIVE"
+                    },
+                    "previous": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    },
+                    "created_at": {
+                      "from": "time"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "supersedes",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "finding",
+              "scope": "INSTANCE"
+            },
+            "subject": {
+              "type": "string",
+              "maxBytes": 120
+            },
+            "summary": {
+              "type": "string",
+              "maxBytes": 512
+            }
+          },
+          "required": [
+            "previous",
+            "subject",
+            "summary"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "finding.retract",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "finding"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "author"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "ACTIVE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "finding",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "kind": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "subject": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "subject"
+                      ]
+                    },
+                    "summary": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "detail_mode": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "detail_mode"
+                      ]
+                    },
+                    "detail": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "detail"
+                      ]
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "RETRACTED"
+                    },
+                    "previous": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    },
+                    "created_at": {
+                      "from": "time"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "supersedes",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "finding",
+              "scope": "INSTANCE"
+            }
+          },
+          "required": [
+            "previous"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "finding.challenge",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "not",
+                "rule": {
+                  "op": "eq",
+                  "left": {
+                    "from": "resolved_payload",
+                    "ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    },
+                    "path": [
+                      "author"
+                    ]
+                  },
+                  "right": {
+                    "from": "auth",
+                    "field": "actorId"
+                  }
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding.challenge",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "created_at": {
+                      "from": "time"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "challenges",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "finding",
+              "scope": "INSTANCE"
+            },
+            "summary": {
+              "type": "string",
+              "maxBytes": 512
+            }
+          },
+          "required": [
+            "previous",
+            "summary"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "work.announce",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "announcement"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "work.announcement",
+                "entity": {
+                  "mode": "new",
+                  "slot": "announcement"
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "CLAIM"
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "scope": {
+                      "from": "body",
+                      "path": [
+                        "scope"
+                      ]
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "expires_at": {
+                      "from": "time_add",
+                      "timestamp": {
+                        "from": "time"
+                      },
+                      "milliseconds": {
+                        "from": "body",
+                        "path": [
+                          "ttl_ms"
+                        ]
+                      }
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "ACTIVE"
+                    },
+                    "previous": {
+                      "from": "literal",
+                      "value": null
+                    },
+                    "created_at": {
+                      "from": "time"
+                    }
+                  }
+                },
+                "relations": []
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "scope": {
+              "type": "string",
+              "maxBytes": 256
+            },
+            "summary": {
+              "type": "string",
+              "maxBytes": 512
+            },
+            "ttl_ms": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 3600000
+            }
+          },
+          "required": [
+            "scope",
+            "summary",
+            "ttl_ms"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "work.announcement.renew",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "announcement"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "work.announcement",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "author"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "work.announcement",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "ACTIVE"
+                }
+              },
+              {
+                "op": "lt",
+                "left": {
+                  "from": "time"
+                },
+                "right": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "work.announcement",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "expires_at"
+                  ]
+                }
+              },
+              {
+                "op": "gt",
+                "left": {
+                  "from": "time_add",
+                  "timestamp": {
+                    "from": "time"
+                  },
+                  "milliseconds": {
+                    "from": "body",
+                    "path": [
+                      "ttl_ms"
+                    ]
+                  }
+                },
+                "right": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "work.announcement",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "expires_at"
+                  ]
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "work.announcement",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "announcement",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "work.announcement",
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "CLAIM"
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "scope": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "work.announcement",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "scope"
+                      ]
+                    },
+                    "summary": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "work.announcement",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "expires_at": {
+                      "from": "time_add",
+                      "timestamp": {
+                        "from": "time"
+                      },
+                      "milliseconds": {
+                        "from": "body",
+                        "path": [
+                          "ttl_ms"
+                        ]
+                      }
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "ACTIVE"
+                    },
+                    "previous": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "work.announcement",
+                      "scope": "INSTANCE"
+                    },
+                    "created_at": {
+                      "from": "time"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "supersedes",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "work.announcement",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "work.announcement",
+              "scope": "INSTANCE"
+            },
+            "ttl_ms": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 3600000
+            }
+          },
+          "required": [
+            "previous",
+            "ttl_ms"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "work.announcement.release",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "announcement"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "work.announcement",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "author"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "work.announcement",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "ACTIVE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "work.announcement",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "announcement",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "work.announcement",
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "CLAIM"
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "scope": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "work.announcement",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "scope"
+                      ]
+                    },
+                    "summary": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "work.announcement",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "expires_at": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "work.announcement",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "expires_at"
+                      ]
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "RELEASED"
+                    },
+                    "previous": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "work.announcement",
+                      "scope": "INSTANCE"
+                    },
+                    "created_at": {
+                      "from": "time"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "supersedes",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "work.announcement",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "work.announcement",
+              "scope": "INSTANCE"
+            }
+          },
+          "required": [
+            "previous"
+          ],
+          "additionalProperties": false
+        }
+      }
+    ]
+  },
+  "roles": {
+    "WORKER": {
+      "instructions": "roles/cooperation-worker.md",
+      "tools": [
+        {
+          "name": "finding_publish",
+          "action": "finding.publish"
+        },
+        {
+          "name": "finding_correct",
+          "action": "finding.correct"
+        },
+        {
+          "name": "finding_retract",
+          "action": "finding.retract"
+        },
+        {
+          "name": "finding_challenge",
+          "action": "finding.challenge"
+        },
+        {
+          "name": "work_announce",
+          "action": "work.announce"
+        },
+        {
+          "name": "work_announcement_renew",
+          "action": "work.announcement.renew"
+        },
+        {
+          "name": "work_announcement_release",
+          "action": "work.announcement.release"
+        }
+      ],
+      "context": [
+        "goal",
+        "selected_state",
+        "updates"
+      ]
+    }
+  },
+  "resources": {
+    "roles/cooperation-worker.md": {
+      "media_type": "text/markdown",
+      "text": "# Cooperation Worker\n\nInspect the pinned package and confirm your actor, service, workspace, instance\nand role. Read bounded current findings and work announcements. Use exact record\nreferences when correcting, challenging or releasing earlier work.\n\nChoose useful work yourself. Announce scope and intended files with work.announce\nbefore editing; this is a non-exclusive declaration, not a task lock. Overlapping\nannouncements are permitted. Negotiate the overlap using findings and exact\nreferences. Expired announcements are historical evidence, not current ownership.\nRenew an active announcement before expiry or release it when finished. Never\nwait indefinitely for a peer whose announcement has expired.\n\nPublish useful OBSERVED behavior, supported FACTs, disproved approaches as FAIL,\nand PATCH_SUMMARY entries with test or artifact references. A label does not prove\ntruth: inspect evidence and validate requirements yourself. Correct or retract\nyour own outdated finding and challenge another author's exact version.\n\nSubjects, summaries and announcement scopes are readable by the service and\nauthorized space members. Check the package's detail mode: E2EE_BODY uses SDK\nencrypted record contents; READABLE_STRUCTURE deliberately stores detail in\nreadable structure. Do not put secrets in a readable package. Neither mode\npublishes content publicly or grants shell/Git access.\n\nUse existing local tools, private branches and the repository's merge policy.\nSelf-verify and integrate useful work, then select another useful contribution.\nIndependent review and exclusive leases are separate optional protocols, not\nmandatory steps of this symmetric cooperation loop.\n\nKeep original operation IDs and prepared inputs for uncertain submissions.\nResume the original SDK operation rather than generating a replacement. Delivery\ninto an Agent conversation belongs to the host; this protocol does not wake peers.\n"
+    }
+  },
+  "dependencies": []
+}

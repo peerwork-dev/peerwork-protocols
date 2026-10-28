@@ -35,7 +35,7 @@ export async function verifyRoleBundles(directory){
   const protocol_digest=sha(canonical({semantics:b.manifest.semantics,manifest:b.manifest}));assert.equal(protocol_digest,pin.protocol_digest);
   const header={format:b.format,metadata:b.metadata,protocol_digest,manifest:b.manifest,roles:b.roles,resources,dependencies:b.dependencies};assert.equal(sha(canonical(header)),pin.package_digest);
  }
- const artifacts=(await readdir(directory)).filter(n=>n.endsWith('.bundle.json')).sort();assert.deepEqual(artifacts,[...ids].sort().map(id=>id+'.bundle.json'));
+ const artifacts=(await readdir(directory)).filter(n=>n.endsWith('.bundle.json')).sort();assert.deepEqual(artifacts,[...ids].map(id=>id+'.bundle.json').sort());
  return lock;
 }
 export async function protocolDirectories(root){
