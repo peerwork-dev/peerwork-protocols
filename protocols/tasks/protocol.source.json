@@ -1,0 +1,766 @@
+{
+  "format": "peerwork.protocol-source.v1",
+  "semantics": "peerwork.kernel.v1",
+  "manifest": {
+    "name": "peerwork.task.v1",
+    "display_version": "1",
+    "semantics": "peerwork.kernel.v1",
+    "dependencies": [],
+    "protocol_roles": [
+      "MANAGER",
+      "CONTRIBUTOR"
+    ],
+    "capabilities": [
+      "MANAGE",
+      "REPORT"
+    ],
+    "role_conflicts": [],
+    "historical_role_conflicts": [],
+    "constraints": {},
+    "record_schemas": {
+      "task.revision": {
+        "type": "object",
+        "fields": {
+          "title": "string",
+          "description": "string",
+          "status": "string",
+          "assignee": "json",
+          "note": "string",
+          "author": "string",
+          "parent": "json"
+        },
+        "required": [
+          "title",
+          "description",
+          "status",
+          "assignee",
+          "note",
+          "author",
+          "parent"
+        ],
+        "max_bytes": 16384
+      },
+      "task.report": {
+        "type": "object",
+        "fields": {
+          "task_ref": "json",
+          "kind": "string",
+          "summary": "string",
+          "evidence_refs": "json",
+          "author": "string"
+        },
+        "required": [
+          "task_ref",
+          "kind",
+          "summary",
+          "evidence_refs",
+          "author"
+        ],
+        "max_bytes": 16384
+      }
+    },
+    "initial_state": {},
+    "actions": [
+      {
+        "id": "task.create",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": [
+            "task"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "MANAGER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "MANAGE"
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "task.revision",
+                "recordSlot": "revision",
+                "entity": {
+                  "mode": "new",
+                  "slot": "task"
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "title": {
+                      "from": "body",
+                      "path": [
+                        "title"
+                      ]
+                    },
+                    "description": {
+                      "from": "body",
+                      "path": [
+                        "description"
+                      ]
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "OPEN"
+                    },
+                    "assignee": {
+                      "from": "body",
+                      "path": [
+                        "assignee"
+                      ]
+                    },
+                    "note": {
+                      "from": "literal",
+                      "value": ""
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "parent": {
+                      "from": "literal",
+                      "value": null
+                    }
+                  }
+                },
+                "relations": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "task.update",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": [
+            "task"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "MANAGER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "MANAGE"
+              },
+              {
+                "op": "exact_ref",
+                "ref": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "task_ref"
+                  ],
+                  "scope": "INSTANCE"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "from_status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "IN_PROGRESS"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "task.revision",
+                "recordSlot": "revision",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "task",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "task_ref"
+                    ],
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "title": {
+                      "from": "body",
+                      "path": [
+                        "title"
+                      ]
+                    },
+                    "description": {
+                      "from": "body",
+                      "path": [
+                        "description"
+                      ]
+                    },
+                    "status": {
+                      "from": "body",
+                      "path": [
+                        "status"
+                      ]
+                    },
+                    "assignee": {
+                      "from": "body",
+                      "path": [
+                        "assignee"
+                      ]
+                    },
+                    "note": {
+                      "from": "body",
+                      "path": [
+                        "note"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "parent": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "task_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "parent",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "task_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "MANAGER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "MANAGE"
+              },
+              {
+                "op": "exact_ref",
+                "ref": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "task_ref"
+                  ],
+                  "scope": "INSTANCE"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "from_status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "IN_PROGRESS"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "DONE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "task.revision",
+                "recordSlot": "revision",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "task",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "task_ref"
+                    ],
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "title": {
+                      "from": "body",
+                      "path": [
+                        "title"
+                      ]
+                    },
+                    "description": {
+                      "from": "body",
+                      "path": [
+                        "description"
+                      ]
+                    },
+                    "status": {
+                      "from": "body",
+                      "path": [
+                        "status"
+                      ]
+                    },
+                    "assignee": {
+                      "from": "body",
+                      "path": [
+                        "assignee"
+                      ]
+                    },
+                    "note": {
+                      "from": "body",
+                      "path": [
+                        "note"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "parent": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "task_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "parent",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "task_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "MANAGER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "MANAGE"
+              },
+              {
+                "op": "exact_ref",
+                "ref": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "task_ref"
+                  ],
+                  "scope": "INSTANCE"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "from_status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "CANCELED"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "task.revision",
+                "recordSlot": "revision",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "task",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "task_ref"
+                    ],
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "title": {
+                      "from": "body",
+                      "path": [
+                        "title"
+                      ]
+                    },
+                    "description": {
+                      "from": "body",
+                      "path": [
+                        "description"
+                      ]
+                    },
+                    "status": {
+                      "from": "body",
+                      "path": [
+                        "status"
+                      ]
+                    },
+                    "assignee": {
+                      "from": "body",
+                      "path": [
+                        "assignee"
+                      ]
+                    },
+                    "note": {
+                      "from": "body",
+                      "path": [
+                        "note"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "parent": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "task_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "parent",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "task_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "MANAGER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "MANAGE"
+              },
+              {
+                "op": "exact_ref",
+                "ref": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "task_ref"
+                  ],
+                  "scope": "INSTANCE"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "from_status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "IN_PROGRESS"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "CANCELED"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "task.revision",
+                "recordSlot": "revision",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "task",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "task_ref"
+                    ],
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "title": {
+                      "from": "body",
+                      "path": [
+                        "title"
+                      ]
+                    },
+                    "description": {
+                      "from": "body",
+                      "path": [
+                        "description"
+                      ]
+                    },
+                    "status": {
+                      "from": "body",
+                      "path": [
+                        "status"
+                      ]
+                    },
+                    "assignee": {
+                      "from": "body",
+                      "path": [
+                        "assignee"
+                      ]
+                    },
+                    "note": {
+                      "from": "body",
+                      "path": [
+                        "note"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "parent": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "task_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "parent",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "task_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "task.report",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "CONTRIBUTOR"
+              },
+              {
+                "op": "has_capability",
+                "capability": "REPORT"
+              },
+              {
+                "op": "exact_ref",
+                "ref": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "task_ref"
+                  ],
+                  "scope": "INSTANCE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "task.report",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "task_ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "task_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    },
+                    "kind": {
+                      "from": "body",
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "evidence_refs": {
+                      "from": "body",
+                      "path": [
+                        "evidence_refs"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "task",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "task_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "imports": [],
+  "parameters": [],
+  "exports": [],
+  "bindings": [],
+  "derive": []
+}

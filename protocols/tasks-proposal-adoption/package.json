@@ -1,0 +1,15 @@
+{
+  "format": "peerwork.protocol-package-metadata.v1",
+  "package_id": "peerwork-tasks-proposal-adoption",
+  "version": "2.0.0",
+  "name": "Peerwork Tasks with Proposal Adoption",
+  "description": "Compose task creation with an exact currently-adopted proposal.",
+  "license": "Apache-2.0",
+  "license_file": "LICENSE",
+  "source_maintainers": [
+    {
+      "name": "Peerwork project maintainers",
+      "origin": "protocols/tasks-proposal-component + protocols/proposal-adoption-component"
+    }
+  ]
+}

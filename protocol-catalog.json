@@ -1,0 +1,485 @@
+{
+  "format": "peerwork.protocol-catalog.v1",
+  "source_commit": "b26ef91459c1b04fbf52d243ecbf83f17352fd30",
+  "package_count": 14,
+  "packages": [
+    {
+      "package_id": "peerwork-discussion",
+      "version": "1.0.0",
+      "name": "Peerwork Discussion",
+      "digest": "8fd5970ebf4ebd361a029bffc79aebd256199026e4e873f757c2f99221249475",
+      "dependencies": [],
+      "roles": [
+        "CONTRIBUTOR",
+        "EDITOR"
+      ],
+      "capabilities": [
+        "POST",
+        "SUMMARIZE"
+      ],
+      "actions": [
+        "discussion.post",
+        "discussion.reply",
+        "discussion.summarize"
+      ],
+      "task_description": "Discussion messages and editor-authored summaries.",
+      "source_path": "protocols/discussion",
+      "fixtures": [
+        {
+          "id": "authorized-interaction",
+          "passed": true
+        },
+        {
+          "id": "unauthenticated-rejected",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-external-service-report",
+      "version": "1.0.0",
+      "name": "Peerwork External Service Report",
+      "digest": "93000db0360c21400714bb1d6ab2961238bd6fd4cc5c13d55b31687213fac6d3",
+      "dependencies": [],
+      "roles": [
+        "BRIDGE"
+      ],
+      "capabilities": [
+        "REPORT"
+      ],
+      "actions": [
+        "service.REPORTED_AUTHORIZATION",
+        "service.REPORTED_DELIVERY"
+      ],
+      "task_description": "Reports from external systems without granting external authority.",
+      "source_path": "protocols/external-service-report",
+      "fixtures": [
+        {
+          "id": "authorized-interaction",
+          "passed": true
+        },
+        {
+          "id": "unauthenticated-rejected",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-hosted-service-request",
+      "version": "1.0.0",
+      "name": "Peerwork Hosted Service Request",
+      "digest": "d804e4991fdef8b38a924a8a68394e072cc711d228517d118952d9342369cfbb",
+      "dependencies": [],
+      "roles": [
+        "REQUESTER",
+        "TRUSTED",
+        "AUTHORIZER"
+      ],
+      "capabilities": [
+        "PROPOSE",
+        "SETTLE",
+        "DELIVER",
+        "NOTE"
+      ],
+      "actions": [
+        "service.PROPOSE",
+        "service.SETTLE",
+        "service.DELIVER",
+        "service.NOTE"
+      ],
+      "task_description": "Scoped service request, authorization, delivery, and status flow.",
+      "source_path": "protocols/hosted-service-request",
+      "fixtures": [
+        {
+          "id": "authorized-interaction",
+          "passed": true
+        },
+        {
+          "id": "unauthenticated-rejected",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-outputs",
+      "version": "1.0.0",
+      "name": "Peerwork Outputs",
+      "digest": "e17c3da24e4ae98ada08d324eec62f8d4a289b787de040a599a7e3e27daf6ad6",
+      "dependencies": [],
+      "roles": [
+        "CURATOR"
+      ],
+      "capabilities": [
+        "SELECT"
+      ],
+      "actions": [
+        "outputs.select_pinned",
+        "outputs.select_following"
+      ],
+      "task_description": "Pinned workspace references and follow-selected-head outputs.",
+      "source_path": "protocols/outputs",
+      "fixtures": [
+        {
+          "id": "authorized-interaction",
+          "passed": true
+        },
+        {
+          "id": "unauthenticated-rejected",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-proposal-adoption",
+      "version": "1.0.0",
+      "name": "Peerwork Proposal and Adoption",
+      "digest": "a7b9713067524ab85e988be2e665998e15a42c813c60e0a92880afec32b5c95c",
+      "dependencies": [],
+      "roles": [
+        "AUTHOR",
+        "ADOPTER",
+        "REVIEWER"
+      ],
+      "capabilities": [
+        "PROPOSE",
+        "ADOPT"
+      ],
+      "actions": [
+        "proposal.propose",
+        "proposal.adopt"
+      ],
+      "task_description": "Reusable proposal and independent-adoption component. Adoption requires an authenticated actor different from the author recorded from auth.actorId and an exact candidate reference equal to the pinned state reference. Role conflict declarations additionally constrain role grants but do not implement the authorship predicate.",
+      "source_path": "protocols/proposal-adoption",
+      "fixtures": [
+        {
+          "id": "author-cannot-adopt-own-candidate",
+          "passed": true
+        },
+        {
+          "id": "author-proposes",
+          "passed": true
+        },
+        {
+          "id": "different-author-adopts-exact-candidate",
+          "passed": true
+        },
+        {
+          "id": "different-candidate-reference-rejected",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-proposal-adoption-component",
+      "version": "2.0.0",
+      "name": "Peerwork Proposal Adoption Component",
+      "digest": "1b429fed32eccbbf761dc838e0ca529a407c1f202affffa887b9025a45398a4b",
+      "dependencies": [],
+      "roles": [
+        "AUTHOR",
+        "ADOPTER",
+        "REVIEWER"
+      ],
+      "capabilities": [
+        "PROPOSE",
+        "ADOPT"
+      ],
+      "actions": [
+        "proposal.propose",
+        "proposal.adopt"
+      ],
+      "task_description": "Reusable proposal authoring and exact-reference independent adoption interface.",
+      "source_path": "protocols/proposal-adoption-component",
+      "fixtures": [
+        {
+          "id": "author-cannot-adopt-own-candidate",
+          "passed": true
+        },
+        {
+          "id": "author-proposes",
+          "passed": true
+        },
+        {
+          "id": "different-author-adopts-exact-candidate",
+          "passed": true
+        },
+        {
+          "id": "different-candidate-reference-rejected",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-tasks",
+      "version": "1.0.0",
+      "name": "Peerwork Tasks",
+      "digest": "68ef317bae79255203e6215208eea5ff99de049014abe07b0f777eb365e03c5d",
+      "dependencies": [],
+      "roles": [
+        "MANAGER",
+        "CONTRIBUTOR"
+      ],
+      "capabilities": [
+        "MANAGE",
+        "REPORT"
+      ],
+      "actions": [
+        "task.create",
+        "task.update",
+        "task.report"
+      ],
+      "task_description": "Managed task lifecycle and contributor reports.",
+      "source_path": "protocols/tasks",
+      "fixtures": [
+        {
+          "id": "authorized-interaction",
+          "passed": true
+        },
+        {
+          "id": "unauthenticated-rejected",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-tasks-proposal-adoption",
+      "version": "2.0.0",
+      "name": "Peerwork Tasks with Proposal Adoption",
+      "digest": "2891b2dd0ab0f5229917a3b9917ef08bed4ac60539ff6c296b445ba7e89bf669",
+      "dependencies": [
+        "1b429fed32eccbbf761dc838e0ca529a407c1f202affffa887b9025a45398a4b",
+        "b64f1ca03cf2c3bf37707543627b8fa30b5b04611da641129753326e8b51c2e8"
+      ],
+      "roles": [],
+      "capabilities": [],
+      "actions": [],
+      "task_description": "Compose task creation with an exact currently-adopted proposal.",
+      "source_path": "protocols/tasks-proposal-adoption",
+      "fixtures": [
+        {
+          "id": "proposal/author-cannot-adopt-own-candidate",
+          "passed": true
+        },
+        {
+          "id": "proposal/author-proposes",
+          "passed": true
+        },
+        {
+          "id": "proposal/different-author-adopts-exact-candidate",
+          "passed": true
+        },
+        {
+          "id": "proposal/different-candidate-reference-rejected",
+          "passed": true
+        },
+        {
+          "id": "tasks/authorized-interaction",
+          "passed": true
+        },
+        {
+          "id": "tasks/unauthenticated-rejected",
+          "passed": true
+        },
+        {
+          "id": "propose-adopt-create-linked-task",
+          "passed": true
+        },
+        {
+          "id": "task-requires-current-adoption",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-tasks-proposal-component",
+      "version": "2.0.0",
+      "name": "Peerwork Tasks Proposal Input Component",
+      "digest": "b64f1ca03cf2c3bf37707543627b8fa30b5b04611da641129753326e8b51c2e8",
+      "dependencies": [],
+      "roles": [
+        "MANAGER",
+        "CONTRIBUTOR"
+      ],
+      "capabilities": [
+        "MANAGE",
+        "REPORT"
+      ],
+      "actions": [
+        "task.create",
+        "task.update",
+        "task.report",
+        "task.create_from_proposal"
+      ],
+      "task_description": "Task lifecycle with a typed exact-reference proposal input and provenance relation.",
+      "source_path": "protocols/tasks-proposal-component",
+      "fixtures": [
+        {
+          "id": "authorized-interaction",
+          "passed": true
+        },
+        {
+          "id": "unauthenticated-rejected",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-wiki",
+      "version": "1.0.0",
+      "name": "Peerwork Wiki",
+      "digest": "e277f207c0460a30b9a64414cea98da73e50545b96c9c6e5e482727407d198d5",
+      "dependencies": [],
+      "roles": [
+        "EDITOR"
+      ],
+      "capabilities": [
+        "EDIT"
+      ],
+      "actions": [
+        "wiki.create",
+        "wiki.revise",
+        "wiki.branch",
+        "wiki.select_head"
+      ],
+      "task_description": "Revisioned documents with explicit parent references and head selection.",
+      "source_path": "protocols/wiki",
+      "fixtures": [
+        {
+          "id": "authorized-interaction",
+          "passed": true
+        },
+        {
+          "id": "unauthenticated-rejected",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-wiki-draft-component",
+      "version": "2.0.0",
+      "name": "Peerwork Wiki Draft Component",
+      "digest": "02c157d6a037ed7fcc3f7c693b3749fdf76d30f01593cc456c800385ea02d29b",
+      "dependencies": [],
+      "roles": [
+        "AUTHOR"
+      ],
+      "capabilities": [
+        "DRAFT"
+      ],
+      "actions": [
+        "wiki.create",
+        "wiki.revise"
+      ],
+      "task_description": "Creates and revises non-public wiki drafts, exporting only the current exact draft reference and its authenticated author fact.",
+      "source_path": "protocols/wiki-draft-component",
+      "fixtures": [
+        {
+          "id": "create-revise-retains-draft-without-publishing-head",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-wiki-review",
+      "version": "2.0.0",
+      "name": "Peerwork Wiki Review",
+      "digest": "4e10306e385cf44bf0493f54897a8a5b0c69f7aead27c13a776d9051f9e9b033",
+      "dependencies": [],
+      "roles": [
+        "AUTHOR",
+        "REVIEWER",
+        "PUBLISHER"
+      ],
+      "capabilities": [
+        "DRAFT",
+        "SUBMIT",
+        "REVIEW",
+        "PUBLISH"
+      ],
+      "actions": [
+        "wiki.create",
+        "wiki.revise",
+        "review.submit",
+        "review.approve",
+        "wiki.publish",
+        "wiki.publish_update"
+      ],
+      "task_description": "Draft-first Wiki lifecycle with independent approval and explicit publication.",
+      "source_path": "protocols/wiki-review",
+      "fixtures": [
+        {
+          "id": "review-publish-and-update",
+          "passed": true
+        },
+        {
+          "id": "same-author-review-denied-then-continue",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-wiki-review-component",
+      "version": "2.0.0",
+      "name": "Peerwork Wiki Review Component",
+      "digest": "417031fc818d97865fe446800a668234aac0f4e5247a5dccb9ec9928840128f0",
+      "dependencies": [],
+      "roles": [
+        "AUTHOR",
+        "REVIEWER",
+        "PUBLISHER"
+      ],
+      "capabilities": [
+        "SUBMIT",
+        "REVIEW",
+        "PUBLISH"
+      ],
+      "actions": [
+        "review.submit",
+        "review.approve",
+        "wiki.publish",
+        "wiki.publish_update"
+      ],
+      "task_description": "Accepts only typed connected draft and author ports; a different authenticated actor approves, then a publisher emits the public head.",
+      "source_path": "protocols/wiki-review-component",
+      "fixtures": [
+        {
+          "id": "submit-rejects-missing-typed-reference",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "package_id": "peerwork-wiki-review-composition",
+      "version": "2.0.0",
+      "name": "Peerwork Wiki Review Composition",
+      "digest": "44d660b273cc44378e0c819f4a3e0b02bdda07c375adb0041e4a2e81db4b0cb5",
+      "dependencies": [
+        "02c157d6a037ed7fcc3f7c693b3749fdf76d30f01593cc456c800385ea02d29b",
+        "417031fc818d97865fe446800a668234aac0f4e5247a5dccb9ec9928840128f0"
+      ],
+      "roles": [],
+      "capabilities": [],
+      "actions": [],
+      "task_description": "Separate Wiki draft and review/publication packages connected only by typed exact-reference and actor-id ports.",
+      "source_path": "protocols/wiki-review-composition",
+      "fixtures": [
+        {
+          "id": "draft/create-revise-retains-draft-without-publishing-head",
+          "passed": true
+        },
+        {
+          "id": "review/submit-rejects-missing-typed-reference",
+          "passed": true
+        },
+        {
+          "id": "forged-author-body-rejected-then-valid-submit",
+          "passed": true
+        },
+        {
+          "id": "wiki-draft-review-publication-and-stale-cas",
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

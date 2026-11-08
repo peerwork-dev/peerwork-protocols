@@ -1,0 +1,167 @@
+{
+  "format": "peerwork.protocol-source.v1",
+  "semantics": "peerwork.kernel.v1",
+  "manifest": {
+    "name": "peerwork.service-report.v1",
+    "display_version": "1",
+    "semantics": "peerwork.kernel.v1",
+    "dependencies": [],
+    "protocol_roles": [
+      "BRIDGE"
+    ],
+    "capabilities": [
+      "REPORT"
+    ],
+    "role_conflicts": [],
+    "historical_role_conflicts": [],
+    "constraints": {},
+    "record_schemas": {
+      "service.external_report": {
+        "type": "object",
+        "fields": {
+          "kind": "string",
+          "external_ref": "string",
+          "summary": "string",
+          "reporter": "string",
+          "grants_external_authority": "boolean"
+        },
+        "required": [
+          "kind",
+          "external_ref",
+          "summary",
+          "reporter",
+          "grants_external_authority"
+        ],
+        "max_bytes": 16384
+      }
+    },
+    "initial_state": {},
+    "actions": [
+      {
+        "id": "service.REPORTED_AUTHORIZATION",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "BRIDGE"
+              },
+              {
+                "op": "has_capability",
+                "capability": "REPORT"
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.external_report",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "REPORTED_AUTHORIZATION"
+                    },
+                    "external_ref": {
+                      "from": "body",
+                      "path": [
+                        "external_ref"
+                      ]
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "reporter": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "grants_external_authority": {
+                      "from": "literal",
+                      "value": false
+                    }
+                  }
+                },
+                "relations": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "service.REPORTED_DELIVERY",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "BRIDGE"
+              },
+              {
+                "op": "has_capability",
+                "capability": "REPORT"
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.external_report",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "REPORTED_DELIVERY"
+                    },
+                    "external_ref": {
+                      "from": "body",
+                      "path": [
+                        "external_ref"
+                      ]
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "reporter": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "grants_external_authority": {
+                      "from": "literal",
+                      "value": false
+                    }
+                  }
+                },
+                "relations": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "imports": [],
+  "parameters": [],
+  "exports": [],
+  "bindings": [],
+  "derive": []
+}

@@ -1,0 +1,19 @@
+{
+  "format": "peerwork.protocol-lock.v1",
+  "compiler_version": "peerwork.protocol-compiler.v3",
+  "semantics": "peerwork.kernel.v1",
+  "dependencies": [
+    {
+      "alias": "proposal",
+      "package_digest": "1b429fed32eccbbf761dc838e0ca529a407c1f202affffa887b9025a45398a4b",
+      "namespace": "proposal"
+    },
+    {
+      "alias": "tasks",
+      "package_digest": "b64f1ca03cf2c3bf37707543627b8fa30b5b04611da641129753326e8b51c2e8",
+      "namespace": "tasks"
+    }
+  ],
+  "baseline_bindings": {},
+  "output_protocol_digest": "4bbc29376d4c509319f5f825a4d36a627d83a54153d5cefb8762b6d23bcaa9c0"
+}

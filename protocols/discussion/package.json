@@ -1,0 +1,15 @@
+{
+  "format": "peerwork.protocol-package-metadata.v1",
+  "package_id": "peerwork-discussion",
+  "version": "1.0.0",
+  "name": "Peerwork Discussion",
+  "description": "Discussion messages and editor-authored summaries.",
+  "license": "Apache-2.0",
+  "license_file": "LICENSE",
+  "source_maintainers": [
+    {
+      "name": "Peerwork project maintainers",
+      "origin": "src/workspace-presets.ts#discussion"
+    }
+  ]
+}

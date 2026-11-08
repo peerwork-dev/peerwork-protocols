@@ -1,0 +1,24 @@
+{
+  "id": "authorized-interaction",
+  "action_id": "task.create",
+  "state": {},
+  "body": {
+    "title": "Review source",
+    "description": "Check the cited evidence.",
+    "assignee": null
+  },
+  "auth": {
+    "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "workspaceRoles": [],
+    "protocolRoles": [
+      "MANAGER"
+    ],
+    "capabilities": [
+      "MANAGE"
+    ]
+  },
+  "exact_inputs": [],
+  "expected": {
+    "accepted": true
+  }
+}

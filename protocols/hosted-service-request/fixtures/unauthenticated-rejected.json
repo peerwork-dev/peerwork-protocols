@@ -1,0 +1,23 @@
+{
+  "id": "unauthenticated-rejected",
+  "action_id": "service.PROPOSE",
+  "state": {
+    "phase": "OPEN",
+    "turn": "requester",
+    "ready_scope_ref": null,
+    "approval_ref": null,
+    "executor_actor": null
+  },
+  "body": {},
+  "auth": {
+    "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "workspaceRoles": [],
+    "protocolRoles": [],
+    "capabilities": []
+  },
+  "exact_inputs": [],
+  "expected": {
+    "accepted": false,
+    "code": "CONSTRAINT_FAILED"
+  }
+}

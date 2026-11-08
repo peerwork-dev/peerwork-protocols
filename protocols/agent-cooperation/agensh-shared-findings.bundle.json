@@ -1,0 +1,625 @@
+{
+  "format": "peerwork.protocol-bundle.v1",
+  "metadata": {
+    "package_id": "agensh-shared-findings",
+    "version": "1.0.0",
+    "description": "Opt-in agent cooperation protocol reference; see README for research adaptation boundaries.",
+    "license": "Apache-2.0",
+    "credits": [
+      {
+        "name": "Zhan, Song, Dong, Huang, Lian, Xia and Wei — Agensh",
+        "url": "https://arxiv.org/abs/2609.26781v1"
+      }
+    ]
+  },
+  "manifest": {
+    "name": "agensh-shared-findings",
+    "display_version": "1.0.0",
+    "semantics": "peerwork.kernel.v1",
+    "dependencies": [],
+    "protocol_roles": [
+      "WORKER"
+    ],
+    "capabilities": [
+      "FINDING"
+    ],
+    "role_conflicts": [],
+    "historical_role_conflicts": [],
+    "constraints": {},
+    "record_schemas": {
+      "finding": {
+        "type": "object",
+        "fields": {
+          "author": "string",
+          "kind": "string",
+          "subject": "string",
+          "status": "string",
+          "previous": "json"
+        },
+        "required": [
+          "author",
+          "kind",
+          "subject",
+          "status",
+          "previous"
+        ],
+        "max_bytes": 4096
+      },
+      "finding.challenge": {
+        "type": "object",
+        "fields": {
+          "author": "string",
+          "target": "json"
+        },
+        "required": [
+          "author",
+          "target"
+        ],
+        "max_bytes": 4096
+      }
+    },
+    "initial_state": {},
+    "actions": [
+      {
+        "id": "finding.publish",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "finding"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding",
+                "entity": {
+                  "mode": "new",
+                  "slot": "finding"
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "kind": {
+                      "from": "body",
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "subject": {
+                      "from": "body",
+                      "path": [
+                        "subject"
+                      ]
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "ACTIVE"
+                    },
+                    "previous": {
+                      "from": "literal",
+                      "value": null
+                    }
+                  }
+                },
+                "relations": []
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "kind": {
+              "type": "enum",
+              "values": [
+                "OBSERVED",
+                "FACT",
+                "FAIL",
+                "PATCH_SUMMARY"
+              ]
+            },
+            "subject": {
+              "type": "string",
+              "maxBytes": 120
+            }
+          },
+          "required": [
+            "kind",
+            "subject"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "finding.correct",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "finding"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "author"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "ACTIVE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "finding",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "kind": {
+                      "from": "body",
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "subject": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "subject"
+                      ]
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "ACTIVE"
+                    },
+                    "previous": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "supersedes",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "finding",
+              "scope": "INSTANCE"
+            },
+            "kind": {
+              "type": "enum",
+              "values": [
+                "OBSERVED",
+                "FACT",
+                "FAIL",
+                "PATCH_SUMMARY"
+              ]
+            }
+          },
+          "required": [
+            "previous",
+            "kind"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "finding.retract",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "finding"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "author"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "ACTIVE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "finding",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "kind": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "subject": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "subject"
+                      ]
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "RETRACTED"
+                    },
+                    "previous": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "supersedes",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "finding",
+              "scope": "INSTANCE"
+            }
+          },
+          "required": [
+            "previous"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "finding.challenge",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "not",
+                "rule": {
+                  "op": "eq",
+                  "left": {
+                    "from": "resolved_payload",
+                    "ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    },
+                    "path": [
+                      "author"
+                    ]
+                  },
+                  "right": {
+                    "from": "auth",
+                    "field": "actorId"
+                  }
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding.challenge",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "challenges",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "finding",
+              "scope": "INSTANCE"
+            }
+          },
+          "required": [
+            "previous"
+          ],
+          "additionalProperties": false
+        }
+      }
+    ]
+  },
+  "roles": {
+    "WORKER": {
+      "instructions": "roles/symmetric-worker.md",
+      "tools": [
+        {
+          "name": "finding_publish",
+          "action": "finding.publish"
+        },
+        {
+          "name": "finding_correct",
+          "action": "finding.correct"
+        },
+        {
+          "name": "finding_retract",
+          "action": "finding.retract"
+        },
+        {
+          "name": "finding_challenge",
+          "action": "finding.challenge"
+        }
+      ],
+      "context": [
+        "goal",
+        "selected_state",
+        "updates"
+      ]
+    }
+  },
+  "resources": {
+    "roles/symmetric-worker.md": {
+      "media_type": "text/markdown",
+      "text": "# Symmetric Worker\n\nInspect the pinned protocol and confirm your exact actor, space and role. Read\nselected shared state and relevant findings. Independently identify useful work\nfrom the user objective; no central dispatcher or mandatory reviewer is implied.\nPublish scope and intended files as an OBSERVED finding before editing. Negotiate\noverlap with peers through findings and exact-reference challenges. This is an\nannouncement, not an exclusive claim enforced by the protocol.\n\nWork in your own branch or worktree. Share useful facts, failures and patch\nsummaries as you learn them. Correct or retract your own outdated findings and\nreference the exact version you are responding to. Self-verify changes, merge\nthrough the repository's authorized mechanism, then choose further useful work.\nGit and shell access come from your host environment, not this role declaration.\n\nKeep private artifact text in encrypted bodies. Structural fields and role\ninstructions are readable by authorized space members. Resume uncertain writes\nwith the same command/idempotency key. Never claim a merge or test you did not run.\n"
+    }
+  },
+  "dependencies": []
+}

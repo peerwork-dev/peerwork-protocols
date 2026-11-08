@@ -1,0 +1,15 @@
+{
+  "name": "peerwork-protocols",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.20.0 <25"
+  },
+  "scripts": {
+    "export:runner": "node scripts/export-protocol-runner.mjs",
+    "verify": "node scripts/verify-public-bundle.mjs",
+    "catalog": "node scripts/build-catalog.mjs",
+    "provenance": "node scripts/provenance.mjs"
+  }
+}

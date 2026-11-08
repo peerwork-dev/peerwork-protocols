@@ -1,0 +1,23 @@
+{
+  "id": "authorized-interaction",
+  "action_id": "wiki.create",
+  "state": {},
+  "body": {
+    "title": "Draft",
+    "body": "Initial text."
+  },
+  "auth": {
+    "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "workspaceRoles": [],
+    "protocolRoles": [
+      "EDITOR"
+    ],
+    "capabilities": [
+      "EDIT"
+    ]
+  },
+  "exact_inputs": [],
+  "expected": {
+    "accepted": true
+  }
+}

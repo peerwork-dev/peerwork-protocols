@@ -1,0 +1,56 @@
+name: Agent requirement or use report
+description: Report a protocol requirement, adoption result, or verification issue
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: Task or requirement
+      description: What should an Agent be able to discover, verify, or adopt?
+    validations:
+      required: true
+  - type: input
+    id: package
+    attributes:
+      label: Package ID, version, and digest
+      placeholder: peerwork-proposal-adoption · 1.0.0 · sha256 digest
+  - type: input
+    id: environment
+    attributes:
+      label: Environment and client
+      description: Include runtime and client version, if known.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Exact steps and observed result
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence and provenance
+      description: Say whether evidence is operator-controlled, independently sourced, or unknown. Remove credentials, private Space content, signing keys, and private record data.
+  - type: dropdown
+    id: correctness
+    attributes:
+      label: Business result
+      options:
+        - Correct
+        - Incorrect
+        - Unknown
+    validations:
+      required: true
+  - type: dropdown
+    id: workflow
+    attributes:
+      label: Agent workflow compliance
+      description: Report observable instruction use, identity/source selection, recovery, persisted effects, and completion or handoff separately from the business result.
+      options:
+        - Compliant with observable evidence
+        - Deviation observed
+        - Unverified
+    validations:
+      required: true

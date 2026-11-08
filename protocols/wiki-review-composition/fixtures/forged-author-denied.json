@@ -1,0 +1,84 @@
+{
+  "kind": "sequence",
+  "id": "forged-author-body-rejected-then-valid-submit",
+  "state": {},
+  "steps": [
+    {
+      "action_id": "draft.wiki.create",
+      "body": {
+        "title": "Composable Wiki review",
+        "body": "A draft whose author and exact reference flow through exported ports."
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "draft.AUTHOR"
+        ],
+        "capabilities": [
+          "draft.DRAFT"
+        ]
+      },
+      "bind_refs": [
+        {
+          "name": "draft",
+          "record_slot": "revision"
+        }
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "review.review.submit",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft"
+        },
+        "author_id": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "review.AUTHOR"
+        ],
+        "capabilities": [
+          "review.SUBMIT"
+        ]
+      },
+      "exact_inputs": [
+        "draft"
+      ],
+      "expected": {
+        "accepted": false,
+        "code": "CONSTRAINT_FAILED"
+      }
+    },
+    {
+      "action_id": "review.review.submit",
+      "body": {
+        "draft_ref": {
+          "$fixture_ref": "draft"
+        },
+        "author_id": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "review.AUTHOR"
+        ],
+        "capabilities": [
+          "review.SUBMIT"
+        ]
+      },
+      "exact_inputs": [
+        "draft"
+      ],
+      "expected": {
+        "accepted": true
+      }
+    }
+  ]
+}

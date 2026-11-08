@@ -1,0 +1,41 @@
+{
+  "id": "task-requires-current-adoption",
+  "action_id": "tasks.task.create_from_proposal",
+  "state": {},
+  "body": {
+    "title": "Blocked",
+    "description": "Must not run before adoption.",
+    "assignee": null,
+    "proposal_ref": {
+      "record_id": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+      "revision": 1
+    }
+  },
+  "auth": {
+    "actorId": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+    "workspaceRoles": [],
+    "protocolRoles": [
+      "tasks.MANAGER"
+    ],
+    "capabilities": [
+      "tasks.MANAGE"
+    ]
+  },
+  "exact_inputs": [
+    {
+      "recordId": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+      "revision": 1,
+      "schema": "proposal.proposal.candidate",
+      "payload": {
+        "author": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "title": "Adopted task",
+        "body": "A proposal accepted by another actor."
+      },
+      "scope": "INSTANCE"
+    }
+  ],
+  "expected": {
+    "accepted": false,
+    "code": "INVALID_PAYLOAD"
+  }
+}

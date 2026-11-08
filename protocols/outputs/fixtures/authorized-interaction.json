@@ -1,0 +1,36 @@
+{
+  "id": "authorized-interaction",
+  "action_id": "outputs.select_pinned",
+  "state": {},
+  "body": {
+    "collection": "research",
+    "target_ref": {
+      "record_id": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+      "revision": 1
+    },
+    "label": "Source",
+    "summary": "Pinned source"
+  },
+  "auth": {
+    "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "workspaceRoles": [],
+    "protocolRoles": [
+      "CURATOR"
+    ],
+    "capabilities": [
+      "SELECT"
+    ]
+  },
+  "exact_inputs": [
+    {
+      "recordId": "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
+      "revision": 1,
+      "schema": "research.source",
+      "payload": {},
+      "scope": "WORKSPACE"
+    }
+  ],
+  "expected": {
+    "accepted": true
+  }
+}

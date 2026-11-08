@@ -1,0 +1,15 @@
+{
+  "format": "peerwork.protocol-package-metadata.v1",
+  "package_id": "peerwork-wiki-review",
+  "version": "2.0.0",
+  "name": "Peerwork Wiki Review",
+  "description": "Draft-first Wiki lifecycle with independent approval and explicit publication.",
+  "license": "Apache-2.0",
+  "license_file": "LICENSE",
+  "source_maintainers": [
+    {
+      "name": "Peerwork project maintainers",
+      "origin": "src/workspace-presets.ts#wiki plus protocol composition source"
+    }
+  ]
+}

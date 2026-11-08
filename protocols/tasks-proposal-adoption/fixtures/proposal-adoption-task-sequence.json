@@ -1,0 +1,113 @@
+{
+  "kind": "sequence",
+  "id": "propose-adopt-create-linked-task",
+  "state": {},
+  "steps": [
+    {
+      "action_id": "proposal.proposal.propose",
+      "body": {
+        "title": "Sequence candidate",
+        "body": "Create then adopt then reference."
+      },
+      "auth": {
+        "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "proposal.AUTHOR"
+        ],
+        "capabilities": [
+          "proposal.PROPOSE"
+        ]
+      },
+      "bind_refs": [
+        {
+          "name": "candidate",
+          "record_slot": "candidate"
+        }
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "proposal.proposal.adopt",
+      "body": {
+        "candidate_ref": {
+          "$fixture_ref": "candidate"
+        }
+      },
+      "auth": {
+        "actorId": "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "proposal.ADOPTER",
+          "proposal.REVIEWER"
+        ],
+        "capabilities": [
+          "proposal.ADOPT"
+        ]
+      },
+      "exact_inputs": [
+        "candidate"
+      ],
+      "expected": {
+        "accepted": true
+      }
+    },
+    {
+      "action_id": "tasks.task.create_from_proposal",
+      "body": {
+        "title": "Linked task",
+        "description": "A task linked to the accepted candidate.",
+        "assignee": null,
+        "proposal_ref": {
+          "$fixture_ref": "candidate"
+        }
+      },
+      "auth": {
+        "actorId": "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+        "workspaceRoles": [],
+        "protocolRoles": [
+          "tasks.MANAGER"
+        ],
+        "capabilities": [
+          "tasks.MANAGE"
+        ]
+      },
+      "exact_inputs": [
+        "candidate"
+      ],
+      "expected": {
+        "accepted": true,
+        "records": [
+          {
+            "schema": "tasks.task.revision",
+            "recordSlot": "revision",
+            "entity": {
+              "mode": "new",
+              "slot": "task"
+            },
+            "selectHead": true,
+            "payload": {
+              "title": "Linked task",
+              "description": "A task linked to the accepted candidate.",
+              "status": "OPEN",
+              "assignee": null,
+              "note": "",
+              "author": "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD",
+              "parent": null
+            },
+            "relations": [
+              {
+                "kind": "tasks.based_on_candidate",
+                "target": {
+                  "$fixture_ref": "candidate"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

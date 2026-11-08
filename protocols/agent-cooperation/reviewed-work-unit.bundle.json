@@ -1,0 +1,2283 @@
+{
+  "format": "peerwork.protocol-bundle.v1",
+  "metadata": {
+    "package_id": "reviewed-work-unit",
+    "version": "1.0.0",
+    "description": "Opt-in agent cooperation protocol reference; see README for research adaptation boundaries.",
+    "license": "Apache-2.0",
+    "credits": []
+  },
+  "manifest": {
+    "name": "reviewed-work-unit",
+    "display_version": "1.0.0",
+    "semantics": "peerwork.kernel.v1",
+    "dependencies": [],
+    "protocol_roles": [
+      "WORKER",
+      "INTEGRATOR",
+      "REVIEWER"
+    ],
+    "capabilities": [
+      "FINDING",
+      "CLAIM",
+      "SUBMIT",
+      "REOPEN",
+      "REVIEW",
+      "ADOPT"
+    ],
+    "role_conflicts": [],
+    "historical_role_conflicts": [],
+    "constraints": {},
+    "record_schemas": {
+      "finding": {
+        "type": "object",
+        "fields": {
+          "author": "string",
+          "kind": "string",
+          "subject": "string",
+          "status": "string",
+          "previous": "json"
+        },
+        "required": [
+          "author",
+          "kind",
+          "subject",
+          "status",
+          "previous"
+        ],
+        "max_bytes": 4096
+      },
+      "finding.challenge": {
+        "type": "object",
+        "fields": {
+          "author": "string",
+          "target": "json"
+        },
+        "required": [
+          "author",
+          "target"
+        ],
+        "max_bytes": 4096
+      },
+      "work.claim": {
+        "type": "object",
+        "fields": {
+          "author": "string",
+          "expires_at": "integer"
+        },
+        "required": [
+          "author",
+          "expires_at"
+        ],
+        "max_bytes": 4096
+      },
+      "work.result": {
+        "type": "object",
+        "fields": {
+          "author": "string",
+          "claim_ref": "json",
+          "artifact_digest": "string"
+        },
+        "required": [
+          "author",
+          "claim_ref",
+          "artifact_digest"
+        ],
+        "max_bytes": 4096
+      },
+      "review.result": {
+        "type": "object",
+        "fields": {
+          "author": "string",
+          "proposal_ref": "json",
+          "verdict": "string",
+          "evidence_digest": "string"
+        },
+        "required": [
+          "author",
+          "proposal_ref",
+          "verdict",
+          "evidence_digest"
+        ],
+        "max_bytes": 4096
+      },
+      "review.adoption": {
+        "type": "object",
+        "fields": {
+          "author": "string",
+          "proposal_ref": "json",
+          "review_ref": "json"
+        },
+        "required": [
+          "author",
+          "proposal_ref",
+          "review_ref"
+        ],
+        "max_bytes": 4096
+      }
+    },
+    "initial_state": {
+      "work_state": "OPEN",
+      "lease_holder": null,
+      "lease_expires": 0,
+      "lease_ref": null,
+      "result_ref": null,
+      "review_ref": null,
+      "adoption_ref": null
+    },
+    "actions": [
+      {
+        "id": "finding.publish",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "finding"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding",
+                "entity": {
+                  "mode": "new",
+                  "slot": "finding"
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "kind": {
+                      "from": "body",
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "subject": {
+                      "from": "body",
+                      "path": [
+                        "subject"
+                      ]
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "ACTIVE"
+                    },
+                    "previous": {
+                      "from": "literal",
+                      "value": null
+                    }
+                  }
+                },
+                "relations": []
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "kind": {
+              "type": "enum",
+              "values": [
+                "OBSERVED",
+                "FACT",
+                "FAIL",
+                "PATCH_SUMMARY"
+              ]
+            },
+            "subject": {
+              "type": "string",
+              "maxBytes": 120
+            }
+          },
+          "required": [
+            "kind",
+            "subject"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "finding.correct",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "finding"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "author"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "ACTIVE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "finding",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "kind": {
+                      "from": "body",
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "subject": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "subject"
+                      ]
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "ACTIVE"
+                    },
+                    "previous": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "supersedes",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "finding",
+              "scope": "INSTANCE"
+            },
+            "kind": {
+              "type": "enum",
+              "values": [
+                "OBSERVED",
+                "FACT",
+                "FAIL",
+                "PATCH_SUMMARY"
+              ]
+            }
+          },
+          "required": [
+            "previous",
+            "kind"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "finding.retract",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": [
+            "finding"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "author"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "status"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "ACTIVE"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding",
+                "entity": {
+                  "mode": "revise",
+                  "slot": "finding",
+                  "parent": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "previous"
+                    ],
+                    "schema": "finding",
+                    "scope": "INSTANCE"
+                  }
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "kind": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "subject": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "previous"
+                        ],
+                        "schema": "finding",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "subject"
+                      ]
+                    },
+                    "status": {
+                      "from": "literal",
+                      "value": "RETRACTED"
+                    },
+                    "previous": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "supersedes",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "finding",
+              "scope": "INSTANCE"
+            }
+          },
+          "required": [
+            "previous"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "finding.challenge",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "FINDING"
+              },
+              {
+                "op": "not",
+                "rule": {
+                  "op": "eq",
+                  "left": {
+                    "from": "resolved_payload",
+                    "ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    },
+                    "path": [
+                      "author"
+                    ]
+                  },
+                  "right": {
+                    "from": "auth",
+                    "field": "actorId"
+                  }
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "finding.challenge",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "challenges",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "previous"
+                      ],
+                      "schema": "finding",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "previous": {
+              "type": "exact_ref",
+              "schema": "finding",
+              "scope": "INSTANCE"
+            }
+          },
+          "required": [
+            "previous"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "work.claim",
+        "reads": [
+          [
+            "work_state"
+          ],
+          [
+            "lease_holder"
+          ],
+          [
+            "lease_expires"
+          ],
+          [
+            "lease_ref"
+          ]
+        ],
+        "writes": [
+          [
+            "lease_holder"
+          ],
+          [
+            "lease_expires"
+          ],
+          [
+            "lease_ref"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "CLAIM"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "work_state"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "lease_holder"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": null
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "work.claim",
+                "recordSlot": "claim",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "expires_at": {
+                      "from": "time_add",
+                      "timestamp": {
+                        "from": "time"
+                      },
+                      "milliseconds": {
+                        "from": "body",
+                        "path": [
+                          "ttl_ms"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_holder"
+                ],
+                "value": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_expires"
+                ],
+                "value": {
+                  "from": "time_add",
+                  "timestamp": {
+                    "from": "time"
+                  },
+                  "milliseconds": {
+                    "from": "body",
+                    "path": [
+                      "ttl_ms"
+                    ]
+                  }
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_ref"
+                ],
+                "value": {
+                  "from": "produced_ref",
+                  "slot": "claim"
+                }
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "ttl_ms": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 600000
+            }
+          },
+          "required": [
+            "ttl_ms"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "work.renew",
+        "reads": [
+          [
+            "work_state"
+          ],
+          [
+            "lease_holder"
+          ],
+          [
+            "lease_expires"
+          ],
+          [
+            "lease_ref"
+          ]
+        ],
+        "writes": [
+          [
+            "lease_holder"
+          ],
+          [
+            "lease_expires"
+          ],
+          [
+            "lease_ref"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "CLAIM"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "work_state"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "lease_holder"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "claim_ref"
+                  ]
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "lease_ref"
+                  ]
+                }
+              },
+              {
+                "op": "lt",
+                "left": {
+                  "from": "time"
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "lease_expires"
+                  ]
+                }
+              },
+              {
+                "op": "gt",
+                "left": {
+                  "from": "time_add",
+                  "timestamp": {
+                    "from": "time"
+                  },
+                  "milliseconds": {
+                    "from": "body",
+                    "path": [
+                      "ttl_ms"
+                    ]
+                  }
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "lease_expires"
+                  ]
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "work.claim",
+                "recordSlot": "claim",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "expires_at": {
+                      "from": "time_add",
+                      "timestamp": {
+                        "from": "time"
+                      },
+                      "milliseconds": {
+                        "from": "body",
+                        "path": [
+                          "ttl_ms"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_holder"
+                ],
+                "value": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_expires"
+                ],
+                "value": {
+                  "from": "time_add",
+                  "timestamp": {
+                    "from": "time"
+                  },
+                  "milliseconds": {
+                    "from": "body",
+                    "path": [
+                      "ttl_ms"
+                    ]
+                  }
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_ref"
+                ],
+                "value": {
+                  "from": "produced_ref",
+                  "slot": "claim"
+                }
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "ttl_ms": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 600000
+            },
+            "claim_ref": {
+              "type": "exact_ref",
+              "schema": "work.claim",
+              "scope": "INSTANCE"
+            }
+          },
+          "required": [
+            "ttl_ms",
+            "claim_ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "work.reclaim",
+        "reads": [
+          [
+            "work_state"
+          ],
+          [
+            "lease_holder"
+          ],
+          [
+            "lease_expires"
+          ],
+          [
+            "lease_ref"
+          ]
+        ],
+        "writes": [
+          [
+            "lease_holder"
+          ],
+          [
+            "lease_expires"
+          ],
+          [
+            "lease_ref"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "CLAIM"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "work_state"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "not",
+                "rule": {
+                  "op": "eq",
+                  "left": {
+                    "from": "state",
+                    "path": [
+                      "lease_holder"
+                    ]
+                  },
+                  "right": {
+                    "from": "literal",
+                    "value": null
+                  }
+                }
+              },
+              {
+                "op": "gte",
+                "left": {
+                  "from": "time"
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "lease_expires"
+                  ]
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "work.claim",
+                "recordSlot": "claim",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "expires_at": {
+                      "from": "time_add",
+                      "timestamp": {
+                        "from": "time"
+                      },
+                      "milliseconds": {
+                        "from": "body",
+                        "path": [
+                          "ttl_ms"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_holder"
+                ],
+                "value": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_expires"
+                ],
+                "value": {
+                  "from": "time_add",
+                  "timestamp": {
+                    "from": "time"
+                  },
+                  "milliseconds": {
+                    "from": "body",
+                    "path": [
+                      "ttl_ms"
+                    ]
+                  }
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_ref"
+                ],
+                "value": {
+                  "from": "produced_ref",
+                  "slot": "claim"
+                }
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "ttl_ms": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 600000
+            }
+          },
+          "required": [
+            "ttl_ms"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "work.release",
+        "reads": [
+          [
+            "work_state"
+          ],
+          [
+            "lease_holder"
+          ],
+          [
+            "lease_expires"
+          ],
+          [
+            "lease_ref"
+          ]
+        ],
+        "writes": [
+          [
+            "lease_holder"
+          ],
+          [
+            "lease_expires"
+          ],
+          [
+            "lease_ref"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "CLAIM"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "work_state"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "lease_holder"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "claim_ref"
+                  ]
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "lease_ref"
+                  ]
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "set",
+                "path": [
+                  "lease_holder"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": null
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_expires"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": 0
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_ref"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": null
+                }
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "claim_ref": {
+              "type": "exact_ref",
+              "schema": "work.claim",
+              "scope": "INSTANCE"
+            }
+          },
+          "required": [
+            "claim_ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "work.submit",
+        "reads": [
+          [
+            "work_state"
+          ],
+          [
+            "lease_holder"
+          ],
+          [
+            "lease_expires"
+          ],
+          [
+            "lease_ref"
+          ]
+        ],
+        "writes": [
+          [
+            "result_ref"
+          ],
+          [
+            "work_state"
+          ],
+          [
+            "lease_holder"
+          ],
+          [
+            "lease_expires"
+          ],
+          [
+            "lease_ref"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "WORKER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "SUBMIT"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "work_state"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "lease_holder"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "claim_ref"
+                  ]
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "lease_ref"
+                  ]
+                }
+              },
+              {
+                "op": "lt",
+                "left": {
+                  "from": "time"
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "lease_expires"
+                  ]
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "work.result",
+                "recordSlot": "result",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "claim_ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "claim_ref"
+                      ],
+                      "schema": "work.claim",
+                      "scope": "INSTANCE"
+                    },
+                    "artifact_digest": {
+                      "from": "body",
+                      "path": [
+                        "artifact_digest"
+                      ]
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "consumes_claim",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "claim_ref"
+                      ],
+                      "schema": "work.claim",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "set",
+                "path": [
+                  "result_ref"
+                ],
+                "value": {
+                  "from": "produced_ref",
+                  "slot": "result"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "work_state"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "SUBMITTED"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_holder"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": null
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_ref"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": null
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "lease_expires"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": 0
+                }
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "claim_ref": {
+              "type": "exact_ref",
+              "schema": "work.claim",
+              "scope": "INSTANCE"
+            },
+            "artifact_digest": {
+              "type": "source_sha256"
+            }
+          },
+          "required": [
+            "claim_ref",
+            "artifact_digest"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "work.reopen",
+        "reads": [
+          [
+            "work_state"
+          ],
+          [
+            "result_ref"
+          ]
+        ],
+        "writes": [
+          [
+            "work_state"
+          ],
+          [
+            "result_ref"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "INTEGRATOR"
+              },
+              {
+                "op": "has_capability",
+                "capability": "REOPEN"
+              },
+              {
+                "op": "in",
+                "value": {
+                  "from": "state",
+                  "path": [
+                    "work_state"
+                  ]
+                },
+                "set": [
+                  {
+                    "from": "literal",
+                    "value": "SUBMITTED"
+                  },
+                  {
+                    "from": "literal",
+                    "value": "REVIEWED"
+                  }
+                ]
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "result_ref"
+                  ]
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "result_ref"
+                  ]
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "set",
+                "path": [
+                  "work_state"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "result_ref"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": null
+                }
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "result_ref": {
+              "type": "exact_ref",
+              "schema": "work.result",
+              "scope": "INSTANCE"
+            }
+          },
+          "required": [
+            "result_ref"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "review.record",
+        "reads": [
+          [
+            "work_state"
+          ],
+          [
+            "result_ref"
+          ]
+        ],
+        "writes": [
+          [
+            "review_ref"
+          ],
+          [
+            "work_state"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "REVIEWER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "REVIEW"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "work_state"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "SUBMITTED"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "proposal_ref"
+                  ]
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "result_ref"
+                  ]
+                }
+              },
+              {
+                "op": "not",
+                "rule": {
+                  "op": "eq",
+                  "left": {
+                    "from": "resolved_payload",
+                    "ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "proposal_ref"
+                      ],
+                      "schema": "work.result",
+                      "scope": "INSTANCE"
+                    },
+                    "path": [
+                      "author"
+                    ]
+                  },
+                  "right": {
+                    "from": "auth",
+                    "field": "actorId"
+                  }
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "verdict"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "PASS"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "review.result",
+                "recordSlot": "review",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "proposal_ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "proposal_ref"
+                      ],
+                      "schema": "work.result",
+                      "scope": "INSTANCE"
+                    },
+                    "verdict": {
+                      "from": "literal",
+                      "value": "PASS"
+                    },
+                    "evidence_digest": {
+                      "from": "body",
+                      "path": [
+                        "evidence_digest"
+                      ]
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "reviews",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "proposal_ref"
+                      ],
+                      "schema": "work.result",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "set",
+                "path": [
+                  "review_ref"
+                ],
+                "value": {
+                  "from": "produced_ref",
+                  "slot": "review"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "work_state"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "REVIEWED"
+                }
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "REVIEWER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "REVIEW"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "work_state"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "SUBMITTED"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "proposal_ref"
+                  ]
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "result_ref"
+                  ]
+                }
+              },
+              {
+                "op": "not",
+                "rule": {
+                  "op": "eq",
+                  "left": {
+                    "from": "resolved_payload",
+                    "ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "proposal_ref"
+                      ],
+                      "schema": "work.result",
+                      "scope": "INSTANCE"
+                    },
+                    "path": [
+                      "author"
+                    ]
+                  },
+                  "right": {
+                    "from": "auth",
+                    "field": "actorId"
+                  }
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "verdict"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "FAIL"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "review.result",
+                "recordSlot": "review",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "proposal_ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "proposal_ref"
+                      ],
+                      "schema": "work.result",
+                      "scope": "INSTANCE"
+                    },
+                    "verdict": {
+                      "from": "literal",
+                      "value": "FAIL"
+                    },
+                    "evidence_digest": {
+                      "from": "body",
+                      "path": [
+                        "evidence_digest"
+                      ]
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "reviews",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "proposal_ref"
+                      ],
+                      "schema": "work.result",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "set",
+                "path": [
+                  "review_ref"
+                ],
+                "value": {
+                  "from": "produced_ref",
+                  "slot": "review"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "work_state"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "proposal_ref": {
+              "type": "exact_ref",
+              "schema": "work.result",
+              "scope": "INSTANCE"
+            },
+            "verdict": {
+              "type": "enum",
+              "values": [
+                "PASS",
+                "FAIL"
+              ]
+            },
+            "evidence_digest": {
+              "type": "source_sha256"
+            }
+          },
+          "required": [
+            "proposal_ref",
+            "verdict",
+            "evidence_digest"
+          ],
+          "additionalProperties": false
+        }
+      },
+      {
+        "id": "review.adopt",
+        "reads": [
+          [
+            "work_state"
+          ],
+          [
+            "review_ref"
+          ],
+          [
+            "result_ref"
+          ]
+        ],
+        "writes": [
+          [
+            "adoption_ref"
+          ],
+          [
+            "work_state"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "INTEGRATOR"
+              },
+              {
+                "op": "has_capability",
+                "capability": "ADOPT"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "work_state"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "REVIEWED"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "review_ref"
+                  ]
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "review_ref"
+                  ]
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "review_ref"
+                    ],
+                    "schema": "review.result",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "verdict"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "PASS"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "resolved_payload",
+                  "ref": {
+                    "from": "ref",
+                    "source": "body",
+                    "path": [
+                      "review_ref"
+                    ],
+                    "schema": "review.result",
+                    "scope": "INSTANCE"
+                  },
+                  "path": [
+                    "proposal_ref"
+                  ]
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "result_ref"
+                  ]
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "review.adoption",
+                "recordSlot": "adoption",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    },
+                    "proposal_ref": {
+                      "from": "resolved_payload",
+                      "ref": {
+                        "from": "ref",
+                        "source": "body",
+                        "path": [
+                          "review_ref"
+                        ],
+                        "schema": "review.result",
+                        "scope": "INSTANCE"
+                      },
+                      "path": [
+                        "proposal_ref"
+                      ]
+                    },
+                    "review_ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "review_ref"
+                      ],
+                      "schema": "review.result",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "adopts_review",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "review_ref"
+                      ],
+                      "schema": "review.result",
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "set",
+                "path": [
+                  "adoption_ref"
+                ],
+                "value": {
+                  "from": "produced_ref",
+                  "slot": "adoption"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "work_state"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "DONE"
+                }
+              }
+            ]
+          }
+        ],
+        "inputs": {
+          "fields": {
+            "review_ref": {
+              "type": "exact_ref",
+              "schema": "review.result",
+              "scope": "INSTANCE"
+            }
+          },
+          "required": [
+            "review_ref"
+          ],
+          "additionalProperties": false
+        }
+      }
+    ]
+  },
+  "roles": {
+    "WORKER": {
+      "instructions": "roles/worker.md",
+      "tools": [
+        {
+          "name": "finding_publish",
+          "action": "finding.publish"
+        },
+        {
+          "name": "finding_correct",
+          "action": "finding.correct"
+        },
+        {
+          "name": "finding_retract",
+          "action": "finding.retract"
+        },
+        {
+          "name": "finding_challenge",
+          "action": "finding.challenge"
+        },
+        {
+          "name": "work_claim",
+          "action": "work.claim"
+        },
+        {
+          "name": "work_renew",
+          "action": "work.renew"
+        },
+        {
+          "name": "work_reclaim",
+          "action": "work.reclaim"
+        },
+        {
+          "name": "work_release",
+          "action": "work.release"
+        },
+        {
+          "name": "work_submit",
+          "action": "work.submit"
+        }
+      ],
+      "context": [
+        "goal",
+        "selected_state",
+        "updates"
+      ]
+    },
+    "REVIEWER": {
+      "instructions": "roles/reviewer.md",
+      "tools": [
+        {
+          "name": "review_record",
+          "action": "review.record"
+        }
+      ],
+      "context": [
+        "goal",
+        "selected_state",
+        "updates"
+      ]
+    },
+    "INTEGRATOR": {
+      "instructions": "roles/integrator.md",
+      "tools": [
+        {
+          "name": "work_reopen",
+          "action": "work.reopen"
+        },
+        {
+          "name": "review_adopt",
+          "action": "review.adopt"
+        }
+      ],
+      "context": [
+        "goal",
+        "selected_state",
+        "updates"
+      ]
+    }
+  },
+  "resources": {
+    "roles/worker.md": {
+      "media_type": "text/markdown",
+      "text": "# Worker\n\nRead the entire selected protocol before joining. Confirm service, actor,\nworkspace, instance, package digest and role. Treat instructions as guidance;\nonly the declared actions and your current grant confer platform authority.\n\nRead current instance state. Claim an open work unit before working on it.\nKeep only one unfinished work unit yourself; other work units use separate\ninstances and may progress concurrently. Renew before expiration. An expired\nclaim cannot submit results. Share useful intermediate findings early; label\nfacts, observations, failures and patch summaries accurately. Correct or retract\nyour own finding when later evidence contradicts it. Challenge another author's\nfinding by its exact record reference.\n\nInclude the artifact digest and exact references required by an action. Private\nartifact text belongs in encrypted record content, never in public structure.\nKeep secrets out of prompts and structural action inputs. Prepare your own\ncomplete candidate when the task requires one; coordination does not establish\nits scientific correctness. Validate against the user's actual acceptance test.\n\nA grant lists available actions, not currently satisfied guards. After a stale\nrevision, read selected state before deciding on a new operation. For PENDING or\nUNKNOWN, retain the command and idempotency key and resume that exact intent.\nDo not invent a second submission to recover an uncertain first submission.\n"
+    },
+    "roles/reviewer.md": {
+      "media_type": "text/markdown",
+      "text": "# Reviewer\n\nInspect the pinned protocol and current state. Review the exact submitted result\nreference, artifact digest and evidence. Run the task's acceptance checks in your\nown environment. Record PASS or FAIL with the evidence digest. You cannot review\nyour own result. A FAIL returns the work unit to OPEN. This review gate belongs\nto this optional review composition; it is not required by DeLM or Agensh.\n\nA result's signatures establish authorship and binding, not factual correctness.\nFor an uncertain submission, resume its original intent.\n"
+    },
+    "roles/integrator.md": {
+      "media_type": "text/markdown",
+      "text": "# Integrator\n\nInspect the pinned protocol and selected state. Adopt only the exact passing\nreview associated with the current candidate. Retain the result, reviewer and\nartifact references. This optional protocol records adoption; it does not merge\nGit branches or operate a shell on your behalf. Apply and verify the artifact in\nyour own repository before claiming a successful integration.\n"
+    }
+  },
+  "dependencies": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "authorized-interaction",
+  "action_id": "service.REPORTED_AUTHORIZATION",
+  "state": {},
+  "body": {
+    "external_ref": "case-1",
+    "summary": "External system reports an authorization."
+  },
+  "auth": {
+    "actorId": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "workspaceRoles": [],
+    "protocolRoles": [
+      "BRIDGE"
+    ],
+    "capabilities": [
+      "REPORT"
+    ]
+  },
+  "exact_inputs": [],
+  "expected": {
+    "accepted": true
+  }
+}

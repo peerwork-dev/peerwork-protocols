@@ -1,0 +1,1316 @@
+{
+  "format": "peerwork.protocol-source.v1",
+  "semantics": "peerwork.kernel.v1",
+  "manifest": {
+    "name": "peerwork.service-request.v1",
+    "display_version": "1",
+    "semantics": "peerwork.kernel.v1",
+    "dependencies": [],
+    "protocol_roles": [
+      "REQUESTER",
+      "TRUSTED",
+      "AUTHORIZER"
+    ],
+    "capabilities": [
+      "PROPOSE",
+      "SETTLE",
+      "DELIVER",
+      "NOTE"
+    ],
+    "role_conflicts": [
+      [
+        "REQUESTER",
+        "TRUSTED"
+      ],
+      [
+        "REQUESTER",
+        "AUTHORIZER"
+      ]
+    ],
+    "historical_role_conflicts": [
+      [
+        "REQUESTER",
+        "TRUSTED"
+      ],
+      [
+        "REQUESTER",
+        "AUTHORIZER"
+      ]
+    ],
+    "constraints": {},
+    "record_schemas": {
+      "service.message": {
+        "type": "object",
+        "fields": {
+          "kind": "string",
+          "text": "string",
+          "author": "string"
+        },
+        "required": [
+          "kind",
+          "text",
+          "author"
+        ],
+        "max_bytes": 16384
+      },
+      "service.scope": {
+        "type": "object",
+        "fields": {
+          "scope": "string",
+          "author": "string"
+        },
+        "required": [
+          "scope",
+          "author"
+        ],
+        "max_bytes": 16384
+      },
+      "service.approval": {
+        "type": "object",
+        "fields": {
+          "scope_ref": "json",
+          "executor_actor": "string",
+          "action_context": "string",
+          "author": "string"
+        },
+        "required": [
+          "scope_ref",
+          "executor_actor",
+          "action_context",
+          "author"
+        ],
+        "max_bytes": 16384
+      },
+      "service.delivery": {
+        "type": "object",
+        "fields": {
+          "approval_ref": "json",
+          "artifact_refs": "json",
+          "summary": "string",
+          "author": "string"
+        },
+        "required": [
+          "approval_ref",
+          "artifact_refs",
+          "summary",
+          "author"
+        ],
+        "max_bytes": 16384
+      },
+      "service.note": {
+        "type": "object",
+        "fields": {
+          "kind": "string",
+          "summary": "string",
+          "evidence_refs": "json",
+          "author": "string"
+        },
+        "required": [
+          "kind",
+          "summary",
+          "evidence_refs",
+          "author"
+        ],
+        "max_bytes": 16384
+      }
+    },
+    "initial_state": {
+      "phase": "OPEN",
+      "turn": "requester",
+      "ready_scope_ref": null,
+      "approval_ref": null,
+      "executor_actor": null
+    },
+    "actions": [
+      {
+        "id": "service.PROPOSE",
+        "reads": [
+          [
+            "phase"
+          ],
+          [
+            "turn"
+          ],
+          [
+            "ready_scope_ref"
+          ],
+          [
+            "approval_ref"
+          ],
+          [
+            "executor_actor"
+          ]
+        ],
+        "writes": [
+          [
+            "turn"
+          ],
+          [
+            "ready_scope_ref"
+          ],
+          [
+            "approval_ref"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": [
+            "scope"
+          ]
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "REQUESTER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "PROPOSE"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "phase"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "kind"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "request"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.message",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "request"
+                    },
+                    "text": {
+                      "from": "body",
+                      "path": [
+                        "text"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "turn"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "trusted"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "ready_scope_ref"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": null
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "approval_ref"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": null
+                }
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "TRUSTED"
+              },
+              {
+                "op": "has_capability",
+                "capability": "PROPOSE"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "phase"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "kind"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "question"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.message",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "question"
+                    },
+                    "text": {
+                      "from": "body",
+                      "path": [
+                        "text"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "turn"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "requester"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "ready_scope_ref"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": null
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "approval_ref"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": null
+                }
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "TRUSTED"
+              },
+              {
+                "op": "has_capability",
+                "capability": "PROPOSE"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "phase"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "kind"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "scope"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.scope",
+                "recordSlot": "scope",
+                "entity": {
+                  "mode": "new",
+                  "slot": "scope"
+                },
+                "selectHead": true,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "scope": {
+                      "from": "body",
+                      "path": [
+                        "scope"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "turn"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "authorizer"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "ready_scope_ref"
+                ],
+                "value": {
+                  "from": "produced_ref",
+                  "slot": "scope"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "approval_ref"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": null
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "service.SETTLE",
+        "reads": [
+          [
+            "phase"
+          ],
+          [
+            "turn"
+          ],
+          [
+            "ready_scope_ref"
+          ],
+          [
+            "approval_ref"
+          ],
+          [
+            "executor_actor"
+          ]
+        ],
+        "writes": [
+          [
+            "phase"
+          ],
+          [
+            "turn"
+          ],
+          [
+            "approval_ref"
+          ],
+          [
+            "executor_actor"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "AUTHORIZER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "SETTLE"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "phase"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "turn"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "authorizer"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "value"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "yes"
+                }
+              },
+              {
+                "op": "exact_ref",
+                "ref": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "scope_ref"
+                  ],
+                  "scope": "INSTANCE"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "scope_ref"
+                  ],
+                  "scope": "INSTANCE"
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "ready_scope_ref"
+                  ]
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.approval",
+                "recordSlot": "approval",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "scope_ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "scope_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    },
+                    "executor_actor": {
+                      "from": "body",
+                      "path": [
+                        "executor_actor"
+                      ]
+                    },
+                    "action_context": {
+                      "from": "body",
+                      "path": [
+                        "action_context"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "scope",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "scope_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "set",
+                "path": [
+                  "approval_ref"
+                ],
+                "value": {
+                  "from": "produced_ref",
+                  "slot": "approval"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "executor_actor"
+                ],
+                "value": {
+                  "from": "body",
+                  "path": [
+                    "executor_actor"
+                  ]
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "phase"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "AUTHORIZED"
+                }
+              },
+              {
+                "op": "set",
+                "path": [
+                  "turn"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "executor"
+                }
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "AUTHORIZER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "SETTLE"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "phase"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "turn"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "authorizer"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "value"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "no"
+                }
+              },
+              {
+                "op": "exact_ref",
+                "ref": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "scope_ref"
+                  ],
+                  "scope": "INSTANCE"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "scope_ref"
+                  ],
+                  "scope": "INSTANCE"
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "ready_scope_ref"
+                  ]
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.message",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "declined"
+                    },
+                    "text": {
+                      "from": "body",
+                      "path": [
+                        "reason"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "phase"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "DECLINED"
+                }
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "TRUSTED"
+              },
+              {
+                "op": "has_capability",
+                "capability": "SETTLE"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "phase"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "value"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "no"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.message",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "inability"
+                    },
+                    "text": {
+                      "from": "body",
+                      "path": [
+                        "reason"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "phase"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "DECLINED"
+                }
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "TRUSTED"
+              },
+              {
+                "op": "has_capability",
+                "capability": "SETTLE"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "phase"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "AUTHORIZED"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "executor_actor"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "value"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "no"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.message",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "failure"
+                    },
+                    "text": {
+                      "from": "body",
+                      "path": [
+                        "reason"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "phase"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "FAILED"
+                }
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "REQUESTER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "SETTLE"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "phase"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "OPEN"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "value"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "withdraw"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.message",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "withdrawn"
+                    },
+                    "text": {
+                      "from": "body",
+                      "path": [
+                        "reason"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "phase"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "WITHDRAWN"
+                }
+              }
+            ]
+          },
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "REQUESTER"
+              },
+              {
+                "op": "has_capability",
+                "capability": "SETTLE"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "phase"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "AUTHORIZED"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "body",
+                  "path": [
+                    "value"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "withdraw"
+                }
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.message",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "literal",
+                      "value": "withdrawn"
+                    },
+                    "text": {
+                      "from": "body",
+                      "path": [
+                        "reason"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": []
+              },
+              {
+                "op": "set",
+                "path": [
+                  "phase"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "WITHDRAWN"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "service.DELIVER",
+        "reads": [
+          [
+            "phase"
+          ],
+          [
+            "turn"
+          ],
+          [
+            "ready_scope_ref"
+          ],
+          [
+            "approval_ref"
+          ],
+          [
+            "executor_actor"
+          ]
+        ],
+        "writes": [
+          [
+            "phase"
+          ]
+        ],
+        "revisionEffects": {
+          "control": true,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_protocol_role",
+                "role": "TRUSTED"
+              },
+              {
+                "op": "has_capability",
+                "capability": "DELIVER"
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "phase"
+                  ]
+                },
+                "right": {
+                  "from": "literal",
+                  "value": "AUTHORIZED"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "state",
+                  "path": [
+                    "executor_actor"
+                  ]
+                },
+                "right": {
+                  "from": "auth",
+                  "field": "actorId"
+                }
+              },
+              {
+                "op": "exact_ref",
+                "ref": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "approval_ref"
+                  ],
+                  "scope": "INSTANCE"
+                }
+              },
+              {
+                "op": "eq",
+                "left": {
+                  "from": "ref",
+                  "source": "body",
+                  "path": [
+                    "approval_ref"
+                  ],
+                  "scope": "INSTANCE"
+                },
+                "right": {
+                  "from": "state",
+                  "path": [
+                    "approval_ref"
+                  ]
+                }
+              },
+              {
+                "op": "exact_ref_list",
+                "source": "body",
+                "path": [
+                  "artifact_refs"
+                ],
+                "scope": "INSTANCE_OR_WORKSPACE",
+                "max": 32
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.delivery",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "approval_ref": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "approval_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    },
+                    "artifact_refs": {
+                      "from": "body",
+                      "path": [
+                        "artifact_refs"
+                      ]
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": [
+                  {
+                    "kind": "approval",
+                    "target": {
+                      "from": "ref",
+                      "source": "body",
+                      "path": [
+                        "approval_ref"
+                      ],
+                      "scope": "INSTANCE"
+                    }
+                  }
+                ]
+              },
+              {
+                "op": "set",
+                "path": [
+                  "phase"
+                ],
+                "value": {
+                  "from": "literal",
+                  "value": "DELIVERED"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "service.NOTE",
+        "reads": [],
+        "writes": [],
+        "revisionEffects": {
+          "control": false,
+          "contentEntities": []
+        },
+        "variants": [
+          {
+            "when": [
+              {
+                "op": "has_capability",
+                "capability": "NOTE"
+              }
+            ],
+            "effects": [
+              {
+                "op": "append",
+                "schema": "service.note",
+                "selectHead": false,
+                "value": {
+                  "from": "object",
+                  "fields": {
+                    "kind": {
+                      "from": "body",
+                      "path": [
+                        "kind"
+                      ]
+                    },
+                    "summary": {
+                      "from": "body",
+                      "path": [
+                        "summary"
+                      ]
+                    },
+                    "evidence_refs": {
+                      "from": "body",
+                      "path": [
+                        "evidence_refs"
+                      ]
+                    },
+                    "author": {
+                      "from": "auth",
+                      "field": "actorId"
+                    }
+                  }
+                },
+                "relations": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "imports": [],
+  "parameters": [],
+  "exports": [],
+  "bindings": [],
+  "derive": []
+}

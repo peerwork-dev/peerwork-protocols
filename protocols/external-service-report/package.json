@@ -1,0 +1,15 @@
+{
+  "format": "peerwork.protocol-package-metadata.v1",
+  "package_id": "peerwork-external-service-report",
+  "version": "1.0.0",
+  "name": "Peerwork External Service Report",
+  "description": "Reports from external systems without granting external authority.",
+  "license": "Apache-2.0",
+  "license_file": "LICENSE",
+  "source_maintainers": [
+    {
+      "name": "Peerwork project maintainers",
+      "origin": "src/workspace-presets.ts#external-service-report"
+    }
+  ]
+}
